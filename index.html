@@ -3,215 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zahlenvergleichsspiel</title>
+    <title>Spielesammlung</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
             background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
         }
         
         h1 {
             color: #333;
-            font-size: 28px;
-            margin-bottom: 20px;
+            text-align: center;
+            margin-bottom: 30px;
         }
         
-        .game-container {
+        .games-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .game-button {
             background-color: white;
             border-radius: 10px;
-            padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        
-        .numbers-container {
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: #333;
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
             align-items: center;
-            margin: 30px 0;
+            height: 200px;
         }
         
-        .number-box {
-            width: 150px;
-            height: 150px;
-            background-color: #64B5F6; /* Light blue background */
-            color: black; /* Black text for better contrast */
-            font-size: 48px;
-            font-weight: bold;
+        .game-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .game-icon {
+            width: 100%;
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: #f8f8f8;
         }
         
-        .number-box:hover {
-            transform: scale(1.05);
+        .game-icon svg {
+            width: 80px;
+            height: 80px;
         }
         
-        .number-box.selected {
-            background-color: #2196F3;
-            color: black;
-            animation: pulse 0.5s;
-        }
-        
-        .number-box.correct {
-            background-color: #81C784; /* Light green */
-            color: black;
-            animation: correct-animation 0.5s;
-        }
-        
-        .number-box.wrong {
-            background-color: #E57373; /* Light red */
-            color: black;
-            animation: wrong-animation 0.5s;
-        }
-        
-        .or-text {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            margin: 0 10px;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes correct-animation {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes wrong-animation {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(-5deg); }
-            75% { transform: rotate(5deg); }
-            100% { transform: rotate(0deg); }
-        }
-        
-        .message {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 20px 0;
-            height: 30px;
-        }
-        
-        .correct {
-            color: #2E7D32; /* Darker green for better contrast */
-        }
-        
-        .wrong {
-            color: #C62828; /* Darker red for better contrast */
-        }
-        
-        .stats {
-            font-size: 18px;
-            margin: 20px 0;
-            display: flex;
-            justify-content: space-around;
-        }
-        
-        .settings {
-            margin: 20px 0;
-        }
-        
-        select, button {
-            padding: 8px;
-            font-size: 16px;
-            border-radius: 5px;
-            margin: 0 5px;
-        }
-        
-        button {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #0b7dda;
-        }
-        
-        .high-scores {
-            margin-top: 20px;
+        .game-title {
             padding: 15px;
-            background-color: #f0f8ff;
-            border-radius: 10px;
-        }
-        
-        .high-scores h2 {
-            margin-top: 0;
-            color: #333;
-        }
-        
-        .scores-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        
-        .scores-table th, .scores-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
             text-align: center;
-        }
-        
-        .scores-table th {
-            background-color: #f2f2f2;
-            color: #333;
-        }
-        
-        .scores-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .timer {
-            font-size: 24px;
             font-weight: bold;
-            color: #FF5722;
-            margin: 10px 0;
+            font-size: 16px;
         }
         
-        .game-instruction {
-            font-size: 18px;
-            margin: 15px 0;
-            font-weight: bold;
-            color: #555;
+        .coming-soon {
+            background-color: #f0f0f0;
+            color: #777;
+            cursor: not-allowed;
         }
         
-        .fade-in {
-            animation: fadeIn 0.5s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .shake {
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-            100% { transform: translateX(0); }
+        .coming-soon:hover {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .language-selector {
@@ -220,22 +83,29 @@
             right: 20px;
         }
         
+        select {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        
         @media (max-width: 768px) {
+            .games-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
             .language-selector {
                 position: relative;
                 top: 0;
                 right: 0;
+                text-align: right;
                 margin-bottom: 15px;
             }
-            
-            .number-box {
-                width: 120px;
-                height: 120px;
-                font-size: 36px;
-            }
-            
-            .scores-table {
-                font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            .games-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -247,557 +117,205 @@
             <option value="en">English</option>
             <option value="fr">Français</option>
             <option value="es">Español</option>
+            <option value="pl">Polski</option>
         </select>
     </div>
     
-    <h1 id="title">Zahlenvergleichsspiel</h1>
+    <h1 id="page-title">Spielesammlung</h1>
     
-    <div class="game-container">
-        <div id="settings-area" class="settings">
-            <div>
-                <label for="max-number" id="max-number-label">Maximale Zahl:</label>
-                <select id="max-number">
-                    <option value="10">10</option>
-                    <option value="100">100</option>
-                    <option value="1000">1000</option>
-                    <option value="10000">10000</option>
-                </select>
+    <div class="games-container">
+        <!-- Numbers Game -->
+        <a href="numbers_game.html" class="game-button">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="6" width="8" height="12" rx="1" fill="#64B5F6" />
+                    <rect x="14" y="6" width="8" height="12" rx="1" fill="#64B5F6" />
+                    <path d="M6 10v4" stroke="#000" stroke-width="2" />
+                    <path d="M4 12h4" stroke="#000" stroke-width="2" />
+                    <path d="M18 10v4" stroke="#000" stroke-width="2" />
+                    <path d="M10 12h4" stroke="#000" stroke-width="1.5" stroke-dasharray="1 1" />
+                </svg>
             </div>
-            
-            <div style="margin-top: 10px;">
-                <label for="game-mode" id="game-mode-label">Spielmodus:</label>
-                <select id="game-mode">
-                    <option value="higher">Höhere Zahl finden</option>
-                    <option value="lower">Niedrigere Zahl finden</option>
-                    <option value="timed">Zeitherausforderung</option>
-                </select>
+            <div class="game-title" id="numbers-game-title">Zahlenvergleichsspiel</div>
+        </a>
+        
+        <!-- Placeholder for future games -->
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
             </div>
-            
-            <button id="start-game">Spiel starten</button>
+            <div class="game-title" id="coming-soon-1">Demnächst verfügbar</div>
         </div>
         
-        <div id="game-area" style="display: none;">
-            <div class="game-instruction" id="game-instruction">Tippe auf die höhere Zahl!</div>
-            
-            <div class="stats">
-                <div><span id="streak-label">Aktuelle Serie:</span> <span id="streak">0</span></div>
-                <div><span id="high-score-label">Höchstpunktzahl:</span> <span id="high-score">0</span></div>
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
             </div>
-            
-            <div id="timer-container" style="display: none;">
-                <div class="timer"><span id="timer-label">Zeit:</span> <span id="timer">30</span>s</div>
-            </div>
-            
-            <div class="message" id="message"></div>
-            
-            <div class="numbers-container">
-                <div class="number-box" id="number1"></div>
-                <div class="or-text" id="or-text">ODER</div>
-                <div class="number-box" id="number2"></div>
-            </div>
-            
-            <button id="back-button" style="margin-top: 20px;">Zurück zum Menü</button>
+            <div class="game-title" id="coming-soon-2">Demnächst verfügbar</div>
         </div>
         
-        <div id="high-scores-area" class="high-scores">
-            <h2 id="high-scores-title">Highscores</h2>
-            <div id="scores-table-container">
-                <!-- High scores table will be populated here -->
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
             </div>
+            <div class="game-title" id="coming-soon-3">Demnächst verfügbar</div>
+        </div>
+        
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
+            </div>
+            <div class="game-title" id="coming-soon-4">Demnächst verfügbar</div>
+        </div>
+        
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
+            </div>
+            <div class="game-title" id="coming-soon-5">Demnächst verfügbar</div>
+        </div>
+        
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
+            </div>
+            <div class="game-title" id="coming-soon-6">Demnächst verfügbar</div>
+        </div>
+        
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
+            </div>
+            <div class="game-title" id="coming-soon-7">Demnächst verfügbar</div>
+        </div>
+        
+        <div class="game-button coming-soon">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
+            </div>
+            <div class="game-title" id="coming-soon-8">Demnächst verfügbar</div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const startButton = document.getElementById('start-game');
-            const backButton = document.getElementById('back-button');
-            const settingsArea = document.getElementById('settings-area');
-            const gameArea = document.getElementById('game-area');
-            const highScoresArea = document.getElementById('high-scores-area');
-            const maxNumberSelect = document.getElementById('max-number');
-            const gameModeSelect = document.getElementById('game-mode');
-            const number1Element = document.getElementById('number1');
-            const number2Element = document.getElementById('number2');
-            const messageElement = document.getElementById('message');
-            const streakElement = document.getElementById('streak');
-            const highScoreElement = document.getElementById('high-score');
-            const gameInstructionElement = document.getElementById('game-instruction');
-            const timerContainer = document.getElementById('timer-container');
-            const timerElement = document.getElementById('timer');
-            const scoresTableContainer = document.getElementById('scores-table-container');
             const languageSelect = document.getElementById('language-select');
-            const titleElement = document.getElementById('title');
+            const pageTitle = document.getElementById('page-title');
+            const numbersGameTitle = document.getElementById('numbers-game-title');
+            const comingSoonElements = [];
             
-            let num1, num2;
-            let streak = 0;
-            let maxNumber = 10;
-            let gameActive = false;
-            let gameMode = 'higher';
-            let timerInterval;
-            let timeLeft = 30;
-            let highScores = {};
-            let currentLanguage = 'de'; // Default language is German
+            for (let i = 1; i <= 8; i++) {
+                comingSoonElements.push(document.getElementById(`coming-soon-${i}`));
+            }
             
             // Language translations
             const translations = {
                 'en': {
-                    'title': 'Number Comparison Game',
-                    'max-number-label': 'Maximum Number:',
-                    'game-mode-label': 'Game Mode:',
-                    'start-game': 'Start Game',
-                    'back-button': 'Back to Menu',
-                    'streak-label': 'Current Streak:',
-                    'high-score-label': 'High Score:',
-                    'timer-label': 'Time:',
-                    'higher-mode': 'Find Higher Number',
-                    'lower-mode': 'Find Lower Number',
-                    'timed-mode': 'Timed Challenge',
-                    'higher-instruction': 'Tap the higher number!',
-                    'lower-instruction': 'Tap the lower number!',
-                    'timed-instruction': 'Tap the higher number! Beat the clock!',
-                    'correct-message': 'Correct!',
-                    'wrong-message': 'Wrong! Game Over.',
-                    'timeout-message': 'Time\'s up! Game Over.',
-                    'high-scores-title': 'High Scores',
-                    'no-scores': 'No high scores yet. Start playing!',
-                    'or-text': 'OR',
-                    'max': 'Max',
-                    'mode': 'Mode'
+                    'page-title': 'Games Collection',
+                    'numbers-game-title': 'Number Comparison Game',
+                    'coming-soon': 'Coming Soon'
                 },
                 'de': {
-                    'title': 'Zahlenvergleichsspiel',
-                    'max-number-label': 'Maximale Zahl:',
-                    'game-mode-label': 'Spielmodus:',
-                    'start-game': 'Spiel starten',
-                    'back-button': 'Zurück zum Menü',
-                    'streak-label': 'Aktuelle Serie:',
-                    'high-score-label': 'Höchstpunktzahl:',
-                    'timer-label': 'Zeit:',
-                    'higher-mode': 'Höhere Zahl finden',
-                    'lower-mode': 'Niedrigere Zahl finden',
-                    'timed-mode': 'Zeitherausforderung',
-                    'higher-instruction': 'Tippe auf die höhere Zahl!',
-                    'lower-instruction': 'Tippe auf die niedrigere Zahl!',
-                    'timed-instruction': 'Tippe auf die höhere Zahl! Schlage die Uhr!',
-                    'correct-message': 'Richtig!',
-                    'wrong-message': 'Falsch! Spiel vorbei.',
-                    'timeout-message': 'Zeit abgelaufen! Spiel vorbei.',
-                    'high-scores-title': 'Highscores',
-                    'no-scores': 'Noch keine Highscores. Fang an zu spielen!',
-                    'or-text': 'ODER',
-                    'max': 'Max',
-                    'mode': 'Modus'
+                    'page-title': 'Spielesammlung',
+                    'numbers-game-title': 'Zahlenvergleichsspiel',
+                    'coming-soon': 'Demnächst verfügbar'
                 },
                 'fr': {
-                    'title': 'Jeu de Comparaison de Nombres',
-                    'max-number-label': 'Nombre Maximum:',
-                    'game-mode-label': 'Mode de Jeu:',
-                    'start-game': 'Commencer le Jeu',
-                    'back-button': 'Retour au Menu',
-                    'streak-label': 'Série Actuelle:',
-                    'high-score-label': 'Meilleur Score:',
-                    'timer-label': 'Temps:',
-                    'higher-mode': 'Trouver le Nombre le Plus Élevé',
-                    'lower-mode': 'Trouver le Nombre le Plus Bas',
-                    'timed-mode': 'Défi Chronométré',
-                    'higher-instruction': 'Appuyez sur le nombre le plus élevé!',
-                    'lower-instruction': 'Appuyez sur le nombre le plus bas!',
-                    'timed-instruction': 'Appuyez sur le nombre le plus élevé! Battez l\'horloge!',
-                    'correct-message': 'Correct!',
-                    'wrong-message': 'Faux! Jeu terminé.',
-                    'timeout-message': 'Temps écoulé! Jeu terminé.',
-                    'high-scores-title': 'Meilleurs Scores',
-                    'no-scores': 'Pas encore de meilleurs scores. Commencez à jouer!',
-                    'or-text': 'OU',
-                    'max': 'Max',
-                    'mode': 'Mode'
+                    'page-title': 'Collection de Jeux',
+                    'numbers-game-title': 'Jeu de Comparaison de Nombres',
+                    'coming-soon': 'Bientôt Disponible'
                 },
                 'es': {
-                    'title': 'Juego de Comparación de Números',
-                    'max-number-label': 'Número Máximo:',
-                    'game-mode-label': 'Modo de Juego:',
-                    'start-game': 'Iniciar Juego',
-                    'back-button': 'Volver al Menú',
-                    'streak-label': 'Racha Actual:',
-                    'high-score-label': 'Puntuación Máxima:',
-                    'timer-label': 'Tiempo:',
-                    'higher-mode': 'Encontrar el Número Mayor',
-                    'lower-mode': 'Encontrar el Número Menor',
-                    'timed-mode': 'Desafío Cronometrado',
-                    'higher-instruction': '¡Toca el número mayor!',
-                    'lower-instruction': '¡Toca el número menor!',
-                    'timed-instruction': '¡Toca el número mayor! ¡Vence al reloj!',
-                    'correct-message': '¡Correcto!',
-                    'wrong-message': '¡Incorrecto! Fin del juego.',
-                    'timeout-message': '¡Se acabó el tiempo! Fin del juego.',
-                    'high-scores-title': 'Puntuaciones Máximas',
-                    'no-scores': '¡Aún no hay puntuaciones máximas. ¡Empieza a jugar!',
-                    'or-text': 'O',
-                    'max': 'Máx',
-                    'mode': 'Modo'
+                    'page-title': 'Colección de Juegos',
+                    'numbers-game-title': 'Juego de Comparación de Números',
+                    'coming-soon': 'Próximamente'
+                },
+                'pl': {
+                    'page-title': 'Kolekcja Gier',
+                    'numbers-game-title': 'Gra Porównywania Liczb',
+                    'coming-soon': 'Wkrótce Dostępne'
                 }
             };
             
-            // Load high scores from local storage
-            loadHighScores();
-            displayHighScoresTable();
+            // Detect browser language
+            function detectLanguage() {
+                const browserLang = navigator.language || navigator.userLanguage;
+                const shortLang = browserLang.split('-')[0]; // Get primary language code
+                
+                // Check if we support this language
+                if (translations[shortLang]) {
+                    return shortLang;
+                }
+                
+                // Default to German if language not supported
+                return 'de';
+            }
             
-            // Set up event listeners
-            startButton.addEventListener('click', startGame);
-            backButton.addEventListener('click', backToMenu);
-            number1Element.addEventListener('click', () => checkAnswer(1));
-            number2Element.addEventListener('click', () => checkAnswer(2));
+            // Set initial language based on browser setting
+            const initialLanguage = detectLanguage();
+            languageSelect.value = initialLanguage;
+            document.documentElement.lang = initialLanguage;
+            
+            // Apply initial language
+            applyLanguage(initialLanguage);
+            
+            // Add event listener for language changes
             languageSelect.addEventListener('change', changeLanguage);
             
-            // Initialize with default language
-            updateLanguage();
-            
             function changeLanguage() {
-                currentLanguage = languageSelect.value;
-                updateLanguage();
-                
-                // Update game mode options
-                updateGameModeOptions();
-                
-                // Update game instruction if game is active
-                if (gameActive) {
-                    updateGameInstruction();
-                }
+                const currentLanguage = languageSelect.value;
+                applyLanguage(currentLanguage);
             }
             
-            function updateLanguage() {
-                const lang = translations[currentLanguage];
+            function applyLanguage(langCode) {
+                const lang = translations[langCode];
                 
-                // Update static UI elements
-                titleElement.textContent = lang['title'];
-                document.getElementById('max-number-label').textContent = lang['max-number-label'];
-                document.getElementById('game-mode-label').textContent = lang['game-mode-label'];
-                startButton.textContent = lang['start-game'];
-                backButton.textContent = lang['back-button'];
-                document.getElementById('streak-label').textContent = lang['streak-label'];
-                document.getElementById('high-score-label').textContent = lang['high-score-label'];
-                document.getElementById('timer-label').textContent = lang['timer-label'];
-                document.getElementById('high-scores-title').textContent = lang['high-scores-title'];
-                document.getElementById('or-text').textContent = lang['or-text'];
+                // Update UI elements
+                pageTitle.textContent = lang['page-title'];
+                numbersGameTitle.textContent = lang['numbers-game-title'];
+                
+                // Update all "coming soon" elements
+                comingSoonElements.forEach(element => {
+                    element.textContent = lang['coming-soon'];
+                });
                 
                 // Update document language
-                document.documentElement.lang = currentLanguage;
+                document.documentElement.lang = langCode;
                 
-                // Update game mode options
-                updateGameModeOptions();
-                
-                // Refresh high scores display with new language
-                displayHighScoresTable();
-            }
-            
-            function updateGameModeOptions() {
-                const lang = translations[currentLanguage];
-                
-                // Save current selection
-                const currentValue = gameModeSelect.value;
-                
-                // Clear and rebuild options
-                gameModeSelect.innerHTML = '';
-                
-                const higherOption = document.createElement('option');
-                higherOption.value = 'higher';
-                higherOption.textContent = lang['higher-mode'];
-                gameModeSelect.appendChild(higherOption);
-                
-                const lowerOption = document.createElement('option');
-                lowerOption.value = 'lower';
-                lowerOption.textContent = lang['lower-mode'];
-                gameModeSelect.appendChild(lowerOption);
-                
-                const timedOption = document.createElement('option');
-                timedOption.value = 'timed';
-                timedOption.textContent = lang['timed-mode'];
-                gameModeSelect.appendChild(timedOption);
-                
-                // Restore selection
-                gameModeSelect.value = currentValue;
-            }
-            
-            function updateGameInstruction() {
-                const lang = translations[currentLanguage];
-                
-                if (gameMode === 'higher') {
-                    gameInstructionElement.textContent = lang['higher-instruction'];
-                } else if (gameMode === 'lower') {
-                    gameInstructionElement.textContent = lang['lower-instruction'];
-                } else if (gameMode === 'timed') {
-                    gameInstructionElement.textContent = lang['timed-instruction'];
-                }
-            }
-            
-            function startGame() {
-                gameActive = true;
-                streak = 0;
-                streakElement.textContent = streak;
-                maxNumber = parseInt(maxNumberSelect.value);
-                gameMode = gameModeSelect.value;
-                
-                // Hide settings and high scores, show game area
-                settingsArea.style.display = 'none';
-                highScoresArea.style.display = 'none';
-                gameArea.style.display = 'block';
-                
-                // Update game instruction based on game mode
-                updateGameInstruction();
-                
-                if (gameMode === 'higher' || gameMode === 'lower') {
-                    timerContainer.style.display = 'none';
-                } else if (gameMode === 'timed') {
-                    timeLeft = 30;
-                    timerElement.textContent = timeLeft;
-                    timerElement.style.color = '#FF5722'; // Reset color
-                    timerContainer.style.display = 'block';
-                    startTimer();
-                }
-                
-                gameArea.classList.add('fade-in');
-                setTimeout(() => {
-                    gameArea.classList.remove('fade-in');
-                }, 500);
-                
-                messageElement.textContent = '';
-                messageElement.className = 'message';
-                
-                // Display current high score for this mode and max number
-                const scoreKey = `${gameMode}-${maxNumber}`;
-                highScoreElement.textContent = highScores[scoreKey] || 0;
-                
-                generateNumbers();
-            }
-            
-            function backToMenu() {
-                // Stop any active timers
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                }
-                
-                // Hide game area, show settings and high scores
-                gameArea.style.display = 'none';
-                settingsArea.style.display = 'block';
-                highScoresArea.style.display = 'block';
-                
-                // Reset game state
-                gameActive = false;
-                
-                // Refresh high scores display
-                displayHighScoresTable();
-            }
-            
-            function generateNumbers() {
-                // Generate two different random numbers
-                do {
-                    num1 = Math.floor(Math.random() * maxNumber) + 1;
-                    num2 = Math.floor(Math.random() * maxNumber) + 1;
-                } while (num1 === num2);
-                
-                number1Element.textContent = num1;
-                number2Element.textContent = num2;
-                
-                // Reset any previous visual classes
-                number1Element.className = 'number-box';
-                number2Element.className = 'number-box';
-            }
-            
-            function checkAnswer(selectedBox) {
-                if (!gameActive) return;
-                
-                const selectedElement = selectedBox === 1 ? number1Element : number2Element;
-                const otherElement = selectedBox === 1 ? number2Element : number1Element;
-                const selectedNumber = selectedBox === 1 ? num1 : num2;
-                const otherNumber = selectedBox === 1 ? num2 : num1;
-                
-                // Add visual feedback for selection
-                selectedElement.classList.add('selected');
-                
-                let isCorrect = false;
-                
-                if (gameMode === 'higher') {
-                    isCorrect = selectedNumber > otherNumber;
-                } else if (gameMode === 'lower') {
-                    isCorrect = selectedNumber < otherNumber;
-                } else if (gameMode === 'timed') {
-                    isCorrect = selectedNumber > otherNumber;
-                }
-                
-                const lang = translations[currentLanguage];
-                
-                if (isCorrect) {
-                    // Correct answer
-                    streak++;
-                    streakElement.textContent = streak;
-                    messageElement.textContent = lang['correct-message'];
-                    messageElement.className = 'message correct';
-                    
-                    // Update high score if needed
-                    updateHighScore();
-                    
-                    // Visual feedback for correct answer
-                    selectedElement.classList.remove('selected');
-                    selectedElement.classList.add('correct');
-                    
-                    // Continue with new numbers after a short delay
-                    setTimeout(() => {
-                        messageElement.textContent = '';
-                        selectedElement.classList.remove('correct');
-                        generateNumbers();
-                    }, 1000);
-                } else {
-                    // Wrong answer
-                    messageElement.textContent = lang['wrong-message'];
-                    messageElement.className = 'message wrong';
-                    
-                    // Visual feedback for wrong answer
-                    selectedElement.classList.remove('selected');
-                    selectedElement.classList.add('wrong');
-                    otherElement.classList.add('correct');
-                    
-                    // Game over animation
-                    gameArea.classList.add('shake');
-                    setTimeout(() => {
-                        gameArea.classList.remove('shake');
-                    }, 500);
-                    
-                    gameActive = false;
-                    
-                    if (gameMode === 'timed') {
-                        clearInterval(timerInterval);
-                    }
-                    
-                    // Show settings and high scores after a delay
-                    setTimeout(() => {
-                        settingsArea.style.display = 'block';
-                        highScoresArea.style.display = 'block';
-                        displayHighScoresTable();
-                    }, 2000);
-                }
-            }
-            
-            function startTimer() {
-                clearInterval(timerInterval);
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    timerElement.textContent = timeLeft;
-                    
-                    if (timeLeft <= 10) {
-                        timerElement.style.color = '#F44336';
-                    }
-                    
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        if (gameActive) {
-                            const lang = translations[currentLanguage];
-                            gameActive = false;
-                            messageElement.textContent = lang['timeout-message'];
-                            messageElement.className = 'message wrong';
-                            gameArea.classList.add('shake');
-                            setTimeout(() => {
-                                gameArea.classList.remove('shake');
-                            }, 500);
-                            
-                            // Show settings and high scores after a delay
-                            setTimeout(() => {
-                                settingsArea.style.display = 'block';
-                                highScoresArea.style.display = 'block';
-                                displayHighScoresTable();
-                            }, 2000);
-                        }
-                    }
-                }, 1000);
-            }
-            
-            function updateHighScore() {
-                const scoreKey = `${gameMode}-${maxNumber}`;
-                if (!highScores[scoreKey] || streak > highScores[scoreKey]) {
-                    highScores[scoreKey] = streak;
-                    highScoreElement.textContent = streak;
-                    
-                    // Save to local storage
-                    localStorage.setItem('numberGameHighScores', JSON.stringify(highScores));
-                }
-            }
-            
-            function loadHighScores() {
-                const savedScores = localStorage.getItem('numberGameHighScores');
-                if (savedScores) {
-                    highScores = JSON.parse(savedScores);
-                }
-            }
-            
-            function displayHighScoresTable() {
-                const lang = translations[currentLanguage];
-                scoresTableContainer.innerHTML = '';
-                
-                // Get unique game modes and max numbers
-                const modes = ['higher', 'lower', 'timed'];
-                const maxNumbers = ['10', '100', '1000', '10000'];
-                
-                // Create table
-                const table = document.createElement('table');
-                table.className = 'scores-table';
-                
-                // Create header row
-                const headerRow = document.createElement('tr');
-                const modeHeader = document.createElement('th');
-                modeHeader.textContent = lang['mode'];
-                headerRow.appendChild(modeHeader);
-                
-                // Add max number columns
-                maxNumbers.forEach(max => {
-                    const th = document.createElement('th');
-                    th.textContent = `${lang['max']}: ${max}`;
-                    headerRow.appendChild(th);
-                });
-                
-                table.appendChild(headerRow);
-                
-                // Create rows for each game mode
-                modes.forEach(mode => {
-                    const row = document.createElement('tr');
-                    
-                    // Add mode name
-                    const modeCell = document.createElement('td');
-                    if (mode === 'higher') {
-                        modeCell.textContent = lang['higher-mode'];
-                    } else if (mode === 'lower') {
-                        modeCell.textContent = lang['lower-mode'];
-                    } else {
-                        modeCell.textContent = lang['timed-mode'];
-                    }
-                    row.appendChild(modeCell);
-                    
-                    // Add scores for each max number
-                    maxNumbers.forEach(max => {
-                        const scoreKey = `${mode}-${max}`;
-                        const scoreCell = document.createElement('td');
-                        scoreCell.textContent = highScores[scoreKey] || '-';
-                        row.appendChild(scoreCell);
-                    });
-                    
-                    table.appendChild(row);
-                });
-                
-                scoresTableContainer.appendChild(table);
-                
-                // Check if there are any scores
-                let hasScores = false;
-                for (const key in highScores) {
-                    if (highScores.hasOwnProperty(key)) {
-                        hasScores = true;
-                        break;
-                    }
-                }
-                
-                // Show message if no scores
-                if (!hasScores) {
-                    const noScores = document.createElement('p');
-                    noScores.textContent = lang['no-scores'];
-                    scoresTableContainer.appendChild(noScores);
-                }
+                // Update page title
+                document.title = lang['page-title'];
             }
         });
     </script>
