@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahlen-Zuordnungsspiel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .settings-row {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .settings-group {
+            margin: 10px;
+        }
+        
+        label {
+            margin-right: 10px;
+        }
+        
+        select, button {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background-color: #0b7dda;
+        }
+        
+        .game-area {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .instructions {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .score-display {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FF5722;
+            margin: 10px 0;
+        }
+        
+        .game-board {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .numbers-container, .targets-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            min-height: 120px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .numbers-container {
+            background-color: #e3f2fd;
+            border: 2px solid #2196F3;
+        }
+        
+        .targets-container {
+            background-color: #fff8e1;
+            border: 2px solid #FFC107;
+        }
+        
+        .number-card, .target-card {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        
+        .number-card {
+            background-color: #2196F3;
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        
+        .target-card {
+            background-color: white;
+            border: 2px solid #FFC107;
+            font-size: 24px;
+            padding: 5px;
+        }
+        
+        .target-card.text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .target-card.image {
+            padding: 5px;
+        }
+        
+        .target-card.image img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .number-card:hover, .target-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .number-card.dragging, .target-card.dragging {
+            opacity: 0.5;
+        }
+        
+        .number-card.matched, .target-card.matched {
+            cursor: default;
+            opacity: 0.7;
+        }
+        
+        .match-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .success {
+            color: #4CAF50;
+        }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .back-to-menu {
+            margin: 20px auto;
+            text-align: center;
+        }
+        
+        .back-to-menu a {
+            color: #2196F3;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .back-to-menu a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .settings-group {
+                margin: 5px 0;
+            }
+            
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .number-card, .target-card {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .number-card {
+                font-size: 28px;
+            }
+            
+            .target-card.text {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <select id="language-select">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="pl">Polski</option>
+        </select>
+    </div>
+    
+    <h1 id="title">Zahlen-Zuordnungsspiel</h1>
+    
+    <div class="game-container">
+        <div class="settings" id="settings-panel">
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="max-number" id="max-number-label">Höchste Zahl:</label>
+                    <select id="max-number">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="match-type" id="match-type-label">Zuordnungstyp:</label>
+                    <select id="match-type">
+                        <option value="text">Text</option>
+                        <option value="image">Bilder</option>
+                        <option value="mixed">Gemischt</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="game-mode" id="game-mode-label">Spielmodus:</label>
+                    <select id="game-mode">
+                        <option value="practice">Übungsmodus</option>
+                        <option value="timed">Zeitmodus</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="start-btn">Spiel starten</button>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div class="instructions" id="instructions">Ordne die Zahlen ihren entsprechenden Darstellungen zu.</div>
+            
+            <div class="score-display">
+                <span id="score-label">Punkte:</span> <span id="score">0</span>
+            </div>
+            
+            <div id="timer-container" style="display: none;">
+                <div class="timer"><span id="timer-label">Zeit:</span> <span id="timer">60</span>s</div>
+            </div>
+            
+            <div class="game-board">
+                <div class="numbers-container" id="numbers-container">
+                    <!-- Number cards will be generated here -->
+                </div>
+                
+                <div class="targets-container" id="targets-container">
+                    <!-- Target cards will be generated here -->
+                </div>
+            </div>
+            
+            <div class="result" id="result"></div>
+            
+            <div class="controls">
+                <button id="new-round-btn">Neue Runde</button>
+                <button id="back-btn">Zurück zu Einstellungen</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="back-to-menu">
+        <a href="index.html" id="back-link">Zurück zum Spielemenü</a>
+    </div>
+    
+    <footer>
+        <p id="footer-text">&copy; 2025 Onkel Jakob</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const languageSelect = document.getElementById('language-select');
+            const titleElement = document.getElementById('title');
+            const settingsPanel = document.getElementById('settings-panel');
+            const gameArea = document.getElementById('game-area');
+            const maxNumberSelect = document.getElementById('max-number');
+            const matchTypeSelect = document.getElementById('match-type');
+            const gameModeSelect = document.getElementById('game-mode');
+            const startBtn = document.getElementById('start-btn');
+            const newRoundBtn = document.getElementById('new-round-btn');
+            const backBtn = document.getElementById('back-btn');
+            const instructionsElement = document.getElementById('instructions');
+            const numbersContainer = document.getElementById('numbers-container');
+            const targetsContainer = document.getElementById('targets-container');
+            const resultElement = document.getElementById('result');
+            const scoreElement = document.getElementById('score');
+            const timerContainer = document.getElementById('timer-container');
+            const timerElement = document.getElementById('timer');
+            const backLink = document.getElementById('back-link');
+            const footerText = document.getElementById('footer-text');
+            
+            // Game variables
+            let currentLanguage = 'de';
+            let maxNumber = 10;
+            let matchType = 'text';
+            let gameMode = 'practice';
+            let score = 0;
+            let timerInterval;
+            let timeLeft = 60;
+            let numbers = [];
+            let targets = [];
+            let matchedPairs = 0;
+            
+            // Language translations
+            const translations = {
+                'en': {
+                    'title': 'Number Matching Game',
+                    'max-number-label': 'Maximum Number:',
+                    'match-type-label': 'Match Type:',
+                    'game-mode-label': 'Game Mode:',
+                    'start-btn': 'Start Game',
+                    'new-round-btn': 'New Round',
+                    'back-btn': 'Back to Settings',
+                    'score-label': 'Score:',
+                    'timer-label': 'Time:',
+                    'instructions-text': 'Match the numbers with their written forms.',
+                    'instructions-image': 'Match the numbers with the correct quantity of objects.',
+                    'instructions-mixed': 'Match the numbers with their representations.',
+                    'round-complete': 'Round complete! Well done!',
+                    'time-up': 'Time\'s up! Game over.',
+                    'back-link': 'Back to Games Menu',
+                    'footer-text': '© 2025 Uncle Jakob',
+                    'match-types': {
+                        'text': 'Text',
+                        'image': 'Images',
+                        'mixed': 'Mixed'
+                    },
+                    'game-modes': {
+                        'practice': 'Practice Mode',
+                        'timed': 'Timed Mode'
+                    },
+                    'number-words': [
+                        'zero', 'one', 'two', 'three', 'four', 'five', 
+                        'six', 'seven', 'eight', 'nine', 'ten',
+                        'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
+                        'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'
+                    ]
+                },
+                'de': {
+                    'title': 'Zahlen-Zuordnungsspiel',
+                    'max-number-label': 'Höchste Zahl:',
+                    'match-type-label': 'Zuordnungstyp:',
+                    'game-mode-label': 'Spielmodus:',
+                    'start-btn': 'Spiel starten',
+                    'new-round-btn': 'Neue Runde',
+                    'back-btn': 'Zurück zu Einstellungen',
+                    'score-label': 'Punkte:',
+                    'timer-label': 'Zeit:',
+                    'instructions-text': 'Ordne die Zahlen ihren geschriebenen Formen zu.',
+                    'instructions-image': 'Ordne die Zahlen der richtigen Anzahl von Objekten zu.',
+                    'instructions-mixed': 'Ordne die Zahlen ihren Darstellungen zu.',
+                    'round-complete': 'Runde abgeschlossen! Gut gemacht!',
+                    'time-up': 'Zeit abgelaufen! Spiel vorbei.',
+                    'back-link': 'Zurück zum Spielemenü',
+                    'footer-text': '© 2025 Onkel Jakob',
+                    'match-types': {
+                        'text': 'Text',
+                        'image': 'Bilder',
+                        'mixed': 'Gemischt'
+                    },
+                    'game-modes': {
+                        'practice': 'Übungsmodus',
+                        'timed': 'Zeitmodus'
+                    },
+                    'number-words': [
+                        'null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 
+                        'sechs', 'sieben', 'acht', 'neun', 'zehn',
+                        'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn',
+                        'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn', 'zwanzig'
+                    ]
+                },
+                'fr': {
+                    'title': 'Jeu d\'Association de Nombres',
+                    'max-number-label': 'Nombre Maximum:',
+                    'match-type-label': 'Type d\'Association:',
+                    'game-mode-label': 'Mode de Jeu:',
+                    'start-btn': 'Commencer le Jeu',
+                    'new-round-btn': 'Nouvelle Manche',
+                    'back-btn': 'Retour aux Paramètres',
+                    'score-label': 'Score:',
+                    'timer-label': 'Temps:',
+                    'instructions-text': 'Associez les nombres à leurs formes écrites.',
+                    'instructions-image': 'Associez les nombres à la quantité correcte d\'objets.',
+                    'instructions-mixed': 'Associez les nombres à leurs représentations.',
+                    'round-complete': 'Manche terminée! Bien joué!',
+                    'time-up': 'Temps écoulé! Partie terminée.',
+                    'back-link': 'Retour au Menu des Jeux',
+                    'footer-text': '© 2025 Oncle Jakob',
+                    'match-types': {
+                        'text': 'Texte',
+                        'image': 'Images',
+                        'mixed': 'Mixte'
+                    },
+                    'game-modes': {
+                        'practice': 'Mode Entraînement',
+                        'timed': 'Mode Chronométré'
+                    },
+                    'number-words': [
+                        'zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 
+                        'six', 'sept', 'huit', 'neuf', 'dix',
+                        'onze', 'douze', 'treize', 'quatorze', 'quinze',
+                        'seize', 'dix-sept', 'dix-huit', 'dix-neuf', 'vingt'
+                    ]
+                },
+                'es': {
+                    'title': 'Juego de Emparejamiento de Números',
+                    'max-number-label': 'Número Máximo:',
+                    'match-type-label': 'Tipo de Emparejamiento:',
+                    'game-mode-label': 'Modo de Juego:',
+                    'start-btn': 'Iniciar Juego',
+                    'new-round-btn': 'Nueva Ronda',
+                    'back-btn': 'Volver a Configuración',
+                    'score-label': 'Puntuación:',
+                    'timer-label': 'Tiempo:',
+                    'instructions-text': 'Empareja los números con sus formas escritas.',
+                    'instructions-image': 'Empareja los números con la cantidad correcta de objetos.',
+                    'instructions-mixed': 'Empareja los números con sus representaciones.',
+                    'round-complete': '¡Ronda completa! ¡Bien hecho!',
+                    'time-up': '¡Se acabó el tiempo! Fin del juego.',
+                    'back-link': 'Volver al Menú de Juegos',
+                    'footer-text': '© 2025 Tío Jakob',
+                    'match-types': {
+                        'text': 'Texto',
+                        'image': 'Imágenes',
+                        'mixed': 'Mixto'
+                    },
+                    'game-modes': {
+                        'practice': 'Modo Práctica',
+                        'timed': 'Modo Contrarreloj'
+                    },
+                    'number-words': [
+                        'cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 
+                        'seis', 'siete', 'ocho', 'nueve', 'diez',
+                        'once', 'doce', 'trece', 'catorce', 'quince',
+                        'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte'
+                    ]
+                },
+                'pl': {
+                    'title': 'Gra Dopasowywanie Liczb',
+                    'max-number-label': 'Maksymalna Liczba:',
+                    'match-type-label': 'Typ Dopasowania:',
+                    'game-mode-label': 'Tryb Gry:',
+                    'start-btn': 'Rozpocznij Grę',
+                    'new-round-btn': 'Nowa Runda',
+                    'back-btn': 'Powrót do Ustawień',
+                    'score-label': 'Wynik:',
+                    'timer-label': 'Czas:',
+                    'instructions-text': 'Dopasuj liczby do ich pisemnych form.',
+                    'instructions-image': 'Dopasuj liczby do odpowiedniej ilości obiektów.',
+                    'instructions-mixed': 'Dopasuj liczby do ich reprezentacji.',
+                    'round-complete': 'Runda zakończona! Dobra robota!',
+                    'time-up': 'Czas minął! Koniec gry.',
+                    'back-link': 'Powrót do Menu Gier',
+                    'footer-text': '© 2025 Wujek Jakob',
+                    'match-types': {
+                        'text': 'Tekst',
+                        'image': 'Obrazy',
+                        'mixed': 'Mieszane'
+                    },
+                    'game-modes': {
+                        'practice': 'Tryb Ćwiczeń',
+                        'timed': 'Tryb na Czas'
+                    },
+                    'number-words': [
+                        'zero', 'jeden', 'dwa', 'trzy', 'cztery', 'pięć', 
+                        'sześć', 'siedem', 'osiem', 'dziewięć', 'dziesięć',
+                        'jedenaście', 'dwanaście', 'trzynaście', 'czternaście', 'piętnaście',
+                        'szesnaście', 'siedemnaście', 'osiemnaście', 'dziewiętnaście', 'dwadzieścia'
+                    ]
+                }
+            };
+            
+            // Image paths for number representations
+            const imageTemplates = [
+                // For each number, we'll use a template to generate an SVG with that many objects
+                (n) => `<svg width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+                    ${generateApples(n)}
+                </svg>`,
+                (n) => `<svg width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+                    ${generateStars(n)}
+                </svg>`,
+                (n) => `<svg width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+                    ${generateBalloons(n)}
+                </svg>`,
+                (n) => `<svg width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+                    ${generateFlowers(n)}
+                </svg>`
+            ];
+            
+            // Helper functions to generate SVG elements
+            function generateApples(count) {
+                let apples = '';
+                const positions = calculatePositions(count, 90, 90, 15);
+                
+                // Adjust radius based on count
+                const radius = Math.min(12, 24 / Math.sqrt(count));
+                
+                for (let i = 0; i < count; i++) {
+                    const [x, y] = positions[i];
+                    apples += `
+                        <circle cx="${x}" cy="${y}" r="${radius}" fill="#e53935" />
+                        <path d="M${x},${y-radius} Q${x+2},${y-radius-3} ${x+2},${y-radius-6}" stroke="#4CAF50" stroke-width="1.5" fill="none" />
+                    `;
+                }
+                return apples;
+            }
+            
+            function generateStars(count) {
+                let stars = '';
+                const positions = calculatePositions(count, 90, 90, 12);
+                
+                // Adjust size based on count
+                const outerRadius = Math.min(10, 20 / Math.sqrt(count));
+                const innerRadius = outerRadius / 2;
+                
+                for (let i = 0; i < count; i++) {
+                    const [x, y] = positions[i];
+                    const points = calculateStarPoints(x, y, 5, outerRadius, innerRadius);
+                    stars += `<polygon points="${points}" fill="#FFC107" stroke="#FFA000" stroke-width="1" />`;
+                }
+                return stars;
+            }
+            
+            function generateBalloons(count) {
+                let balloons = '';
+                const positions = calculatePositions(count, 90, 90, 12);
+                const colors = ['#2196F3', '#F44336', '#4CAF50', '#9C27B0', '#FF9800'];
+                
+                // Adjust radius based on count
+                const radius = Math.min(10, 20 / Math.sqrt(count));
+                
+                for (let i = 0; i < count; i++) {
+                    const [x, y] = positions[i];
+                    const color = colors[i % colors.length];
+                    balloons += `
+                        <circle cx="${x}" cy="${y-radius/2}" r="${radius}" fill="${color}" />
+                        <path d="M${x},${y+radius/2} L${x},${y+radius+5}" stroke="#555" stroke-width="1" />
+                    `;
+                }
+                return balloons;
+            }
+            
+            function generateFlowers(count) {
+                let flowers = '';
+                const positions = calculatePositions(count, 90, 90, 15);
+                const colors = ['#E91E63', '#9C27B0', '#3F51B5', '#009688', '#FF5722'];
+                
+                // Adjust size based on count
+                const petalRadius = Math.min(6, 12 / Math.sqrt(count));
+                const centerRadius = petalRadius * 0.7;
+                const petalDistance = petalRadius * 1.3;
+                
+                for (let i = 0; i < count; i++) {
+                    const [x, y] = positions[i];
+                    const color = colors[i % colors.length];
+                    
+                    // Flower petals
+                    for (let j = 0; j < 5; j++) {
+                        const angle = (j * 72) * Math.PI / 180;
+                        const px = x + petalDistance * Math.cos(angle);
+                        const py = y + petalDistance * Math.sin(angle);
+                        flowers += `<circle cx="${px}" cy="${py}" r="${petalRadius}" fill="${color}" />`;
+                    }
+                    
+                    // Flower center
+                    flowers += `<circle cx="${x}" cy="${y}" r="${centerRadius}" fill="#FFC107" />`;
+                }
+                return flowers;
+            }
+            
+            
+            function calculatePositions(count, width, height, margin) {
+                const positions = [];
+                
+                if (count === 1) {
+                    // Single object in the center
+                    positions.push([width/2, height/2]);
+                } else if (count <= 4) {
+                    // Arrange in a 2x2 grid with proper spacing
+                    const spacing = (width - 2*margin) / 2;
+                    for (let i = 0; i < Math.min(count, 4); i++) {
+                        const row = Math.floor(i / 2);
+                        const col = i % 2;
+                        positions.push([
+                            margin + col * spacing + spacing/2,
+                            margin + row * spacing + spacing/2
+                        ]);
+                    }
+                } else if (count <= 9) {
+                    // Arrange in a 3x3 grid with proper spacing
+                    const spacing = (width - 2*margin) / 3;
+                    for (let i = 0; i < Math.min(count, 9); i++) {
+                        const row = Math.floor(i / 3);
+                        const col = i % 3;
+                        positions.push([
+                            margin + col * spacing + spacing/2,
+                            margin + row * spacing + spacing/2
+                        ]);
+                    }
+                } else {
+                    // For larger counts, use a more dynamic grid
+                    // Calculate how many rows and columns we need
+                    const gridSize = Math.ceil(Math.sqrt(count));
+                    const spacing = (width - 2*margin) / gridSize;
+                    
+                    // Create a more structured grid with proper spacing
+                    for (let i = 0; i < count; i++) {
+                        const row = Math.floor(i / gridSize);
+                        const col = i % gridSize;
+                        positions.push([
+                            margin + col * spacing + spacing/2,
+                            margin + row * spacing + spacing/2
+                        ]);
+                    }
+                }
+                
+                return positions;
+            }
+            
+            
+            function calculateStarPoints(centerX, centerY, arms, outerRadius, innerRadius) {
+                let points = '';
+                const angleStep = Math.PI / arms;
+                
+                for (let i = 0; i < 2 * arms; i++) {
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const x = centerX + Math.cos(i * angleStep) * radius;
+                    const y = centerY + Math.sin(i * angleStep) * radius;
+                    points += `${x},${y} `;
+                }
+                
+                return points.trim();
+            }
+            
+            // Detect browser language
+            function detectLanguage() {
+                // Check URL parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const langParam = urlParams.get('lang');
+                if (langParam && translations[langParam]) {
+                    return langParam;
+                }
+                
+                // Check localStorage next
+                const storedLang = localStorage.getItem('preferredLanguage');
+                if (storedLang && translations[storedLang]) {
+                    return storedLang;
+                }
+                
+                // Finally, check browser language
+                const browserLang = navigator.language || navigator.userLanguage;
+                const shortLang = browserLang.split('-')[0]; // Get primary language code
+                
+                // Check if we support this language
+                if (translations[shortLang]) {
+                    return shortLang;
+                }
+                
+                // Default to German if language not supported
+                return 'de';
+            }
+            
+            // Set initial language based on detection
+            currentLanguage = detectLanguage();
+            languageSelect.value = currentLanguage;
+            document.documentElement.lang = currentLanguage;
+            
+            // Apply initial language
+            updateLanguage();
+            
+            // Set up event listeners
+            startBtn.addEventListener('click', startGame);
+            newRoundBtn.addEventListener('click', startNewRound);
+            backBtn.addEventListener('click', backToSettings);
+            languageSelect.addEventListener('change', changeLanguage);
+            
+            // Update back link to include language parameter
+            backLink.href = `index.html?lang=${currentLanguage}`;
+            
+            function changeLanguage() {
+                currentLanguage = languageSelect.value;
+                updateLanguage();
+                
+                // Store the language preference in localStorage
+                localStorage.setItem('preferredLanguage', currentLanguage);
+                
+                // Update the URL parameter without reloading the page
+                const url = new URL(window.location);
+                url.searchParams.set('lang', currentLanguage);
+                window.history.replaceState({}, '', url);
+                
+                // Update back link
+                backLink.href = `index.html?lang=${currentLanguage}`;
+                
+                // Update instructions if game is active
+                if (gameArea.style.display === 'block') {
+                    updateInstructions();
+                }
+            }
+            
+            function updateLanguage() {
+                const lang = translations[currentLanguage];
+                
+                // Update static UI elements
+                titleElement.textContent = lang['title'];
+                document.title = lang['title'];
+                document.getElementById('max-number-label').textContent = lang['max-number-label'];
+                document.getElementById('match-type-label').textContent = lang['match-type-label'];
+                document.getElementById('game-mode-label').textContent = lang['game-mode-label'];
+                startBtn.textContent = lang['start-btn'];
+                newRoundBtn.textContent = lang['new-round-btn'];
+                backBtn.textContent = lang['back-btn'];
+                document.getElementById('score-label').textContent = lang['score-label'];
+                document.getElementById('timer-label').textContent = lang['timer-label'];
+                backLink.textContent = lang['back-link'];
+                footerText.textContent = lang['footer-text'];
+                
+                // Update document language
+                document.documentElement.lang = currentLanguage;
+                
+                // Update select options
+                updateMatchTypeOptions();
+                updateGameModeOptions();
+            }
+            
+            function updateMatchTypeOptions() {
+                const lang = translations[currentLanguage]['match-types'];
+                const currentValue = matchTypeSelect.value;
+                
+                // Clear and rebuild options
+                matchTypeSelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'text': lang['text'],
+                    'image': lang['image'],
+                    'mixed': lang['mixed']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    matchTypeSelect.appendChild(option);
+                }
+                
+                // Restore selection
+                matchTypeSelect.value = currentValue;
+            }
+            
+            function updateGameModeOptions() {
+                const lang = translations[currentLanguage]['game-modes'];
+                const currentValue = gameModeSelect.value;
+                
+                // Clear and rebuild options
+                gameModeSelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'practice': lang['practice'],
+                    'timed': lang['timed']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    gameModeSelect.appendChild(option);
+                }
+                
+                // Restore selection
+                gameModeSelect.value = currentValue;
+            }
+            
+            function updateInstructions() {
+                const lang = translations[currentLanguage];
+                instructionsElement.textContent = lang[`instructions-${matchType}`];
+            }
+            
+            function startGame() {
+                // Get selected options
+                maxNumber = parseInt(maxNumberSelect.value);
+                matchType = matchTypeSelect.value;
+                gameMode = gameModeSelect.value;
+                
+                // Reset game state
+                score = 0;
+                scoreElement.textContent = '0';
+                
+                // Show game area, hide settings
+                settingsPanel.style.display = 'none';
+                gameArea.style.display = 'block';
+                
+                // Update instructions
+                updateInstructions();
+                
+                // Set up timer if in timed mode
+                if (gameMode === 'timed') {
+                    timeLeft = 60;
+                    timerElement.textContent = timeLeft;
+                    timerContainer.style.display = 'block';
+                    startTimer();
+                } else {
+                    timerContainer.style.display = 'none';
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                    }
+                }
+                
+                // Generate cards for first round
+                generateCards();
+            }
+            
+            function startTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 10) {
+                        timerElement.style.color = '#F44336';
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        endGame();
+                    }
+                }, 1000);
+            }
+            
+            function generateCards() {
+                // Clear previous cards
+                numbersContainer.innerHTML = '';
+                targetsContainer.innerHTML = '';
+                resultElement.textContent = '';
+                
+                // Reset matched pairs counter
+                matchedPairs = 0;
+                
+                // Generate numbers array (1 to maxNumber)
+                numbers = Array.from({length: maxNumber}, (_, i) => i + 1);
+                
+                // Shuffle the numbers
+                shuffleArray(numbers);
+                
+                // Create target representations based on match type
+                targets = [...numbers];
+                shuffleArray(targets);
+                
+                // Create number cards
+                numbers.forEach(num => {
+                    const card = document.createElement('div');
+                    card.className = 'number-card';
+                    card.textContent = num;
+                    card.dataset.value = num;
+                    card.draggable = true;
+                    
+                    // Add drag events
+                    card.addEventListener('dragstart', dragStart);
+                    card.addEventListener('dragend', dragEnd);
+                    
+                    numbersContainer.appendChild(card);
+                });
+                
+                // Create target cards based on match type
+                targets.forEach(num => {
+                    const card = document.createElement('div');
+                    card.className = 'target-card';
+                    card.dataset.value = num;
+                    
+                    if (matchType === 'text' || (matchType === 'mixed' && Math.random() > 0.5)) {
+                        // Text representation
+                        card.classList.add('text');
+                        card.textContent = translations[currentLanguage]['number-words'][num];
+                    } else {
+                        // Image representation
+                        card.classList.add('image');
+                        const templateIndex = Math.floor(Math.random() * imageTemplates.length);
+                        card.innerHTML = imageTemplates[templateIndex](num);
+                    }
+                    
+                    // Add drop events
+                    card.addEventListener('dragover', dragOver);
+                    card.addEventListener('dragenter', dragEnter);
+                    card.addEventListener('dragleave', dragLeave);
+                    card.addEventListener('drop', drop);
+                    
+                    targetsContainer.appendChild(card);
+                });
+            }
+            
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // Drag and Drop Functions
+            function dragStart(e) {
+                // Only allow dragging if the card is not already matched
+                if (e.target.classList.contains('matched')) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                e.target.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', e.target.dataset.value);
+            }
+            
+            function dragEnd(e) {
+                e.target.classList.remove('dragging');
+            }
+            
+            function dragOver(e) {
+                e.preventDefault();
+            }
+            
+            function dragEnter(e) {
+                e.preventDefault();
+                
+                // Find the actual target card
+                let targetCard = e.target;
+                while (targetCard && !targetCard.classList.contains('target-card')) {
+                    targetCard = targetCard.parentElement;
+                }
+                
+                if (targetCard) {
+                    targetCard.classList.add('drag-over');
+                }
+            }
+            
+            function dragLeave(e) {
+                // Find the actual target card
+                let targetCard = e.target;
+                while (targetCard && !targetCard.classList.contains('target-card')) {
+                    targetCard = targetCard.parentElement;
+                }
+                
+                if (targetCard) {
+                    targetCard.classList.remove('drag-over');
+                }
+            }
+            
+            function drop(e) {
+                e.preventDefault();
+                
+                // Find the actual target card, even if we dropped on a child element
+                let targetCard = e.target;
+                while (targetCard && !targetCard.classList.contains('target-card')) {
+                    targetCard = targetCard.parentElement;
+                }
+                
+                // If we couldn't find a target card, exit
+                if (!targetCard) return;
+                
+                // Remove drag-over class
+                targetCard.classList.remove('drag-over');
+                
+                // Get the dragged number value
+                const numberValue = e.dataTransfer.getData('text/plain');
+                const targetValue = targetCard.dataset.value;
+                
+                // Check if this is a valid target (not already matched)
+                if (targetCard.classList.contains('matched')) {
+                    return;
+                }
+                
+                // Find the dragged number card
+                const numberCard = document.querySelector(`.number-card[data-value="${numberValue}"]`);
+                
+                // Check if it's a match
+                if (numberValue === targetValue) {
+                    // It's a match!
+                    numberCard.classList.add('matched');
+                    targetCard.classList.add('matched');
+                    
+                    // Add match indicator
+                    const indicator = document.createElement('div');
+                    indicator.className = 'match-indicator';
+                    indicator.textContent = '✓';
+                    targetCard.appendChild(indicator);
+                    
+                    // Update score
+                    score += 10;
+                    scoreElement.textContent = score;
+                    
+                    // Update matched pairs counter
+                    matchedPairs++;
+                    
+                    // Check if all pairs are matched
+                    if (matchedPairs === maxNumber) {
+                        roundComplete();
+                    }
+                }
+            }
+
+            
+            function roundComplete() {
+                const lang = translations[currentLanguage];
+                resultElement.textContent = lang['round-complete'];
+                resultElement.className = 'result success';
+                
+                // In timed mode, add time bonus
+                if (gameMode === 'timed') {
+                    // Add time bonus based on max number
+                    const timeBonus = Math.min(20, maxNumber * 2);
+                    timeLeft += timeBonus;
+                    timerElement.textContent = timeLeft;
+                    
+                    // Start new round after a delay
+                    setTimeout(() => {
+                        startNewRound();
+                    }, 2000);
+                }
+            }
+            
+            function startNewRound() {
+                // Clear result
+                resultElement.textContent = '';
+                resultElement.className = 'result';
+                
+                // Generate new cards
+                generateCards();
+            }
+            
+            function backToSettings() {
+                // Stop timer if running
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                
+                // Show settings, hide game area
+                settingsPanel.style.display = 'block';
+                gameArea.style.display = 'none';
+            }
+            
+            function endGame() {
+                // Stop timer
+                clearInterval(timerInterval);
+                
+                // Show game over message
+                const lang = translations[currentLanguage];
+                resultElement.textContent = lang['time-up'];
+                resultElement.className = 'result';
+                
+                // Disable dragging
+                document.querySelectorAll('.number-card').forEach(card => {
+                    card.draggable = false;
+                });
+                
+                // Show settings button after a delay
+                setTimeout(() => {
+                    backToSettings();
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

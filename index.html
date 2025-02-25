@@ -217,17 +217,46 @@
             <div class="game-title" id="sudoku-game-title">Sudoku 4x4</div>
         </a>
 
-        
-        <div class="game-button coming-soon">
+        <!-- Number Matching Game -->
+        <a href="matching_numbers.html" class="game-button" id="matching-game-link">
             <div class="game-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 8v4" />
-                    <path d="M12 16h.01" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Background -->
+                    <rect x="2" y="2" width="20" height="20" rx="2" fill="#E1F5FE" stroke="#0288D1" stroke-width="1" />
+                    
+                    <!-- Number card -->
+                    <rect x="4" y="7" width="6" height="10" rx="1" fill="#2196F3" stroke="#0D47A1" stroke-width="1" />
+                    <text x="7" y="14" font-family="Arial" font-size="6" fill="white" text-anchor="middle" font-weight="bold">5</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M11 12h2" stroke="#333" stroke-width="1" />
+                    <path d="M13 12l-1 -1" stroke="#333" stroke-width="1" />
+                    <path d="M13 12l-1 1" stroke="#333" stroke-width="1" />
+                    
+                    <!-- Target representation - apples -->
+                    <circle cx="16" cy="8.5" r="1.5" fill="#e53935" />
+                    <path d="M16,7 Q16.3,6.7 16.3,6.5" stroke="#4CAF50" stroke-width="0.5" />
+                    
+                    <circle cx="19" cy="8.5" r="1.5" fill="#e53935" />
+                    <path d="M19,7 Q19.3,6.7 19.3,6.5" stroke="#4CAF50" stroke-width="0.5" />
+                    
+                    <circle cx="16" cy="11.5" r="1.5" fill="#e53935" />
+                    <path d="M16,10 Q16.3,9.7 16.3,9.5" stroke="#4CAF50" stroke-width="0.5" />
+                    
+                    <circle cx="19" cy="11.5" r="1.5" fill="#e53935" />
+                    <path d="M19,10 Q19.3,9.7 19.3,9.5" stroke="#4CAF50" stroke-width="0.5" />
+                    
+                    <circle cx="17.5" cy="14.5" r="1.5" fill="#e53935" />
+                    <path d="M17.5,13 Q17.8,12.7 17.8,12.5" stroke="#4CAF50" stroke-width="0.5" />
+                    
+                    <!-- Checkmark -->
+                    <circle cx="18" cy="17" r="1.5" fill="#4CAF50" />
+                    <path d="M17 17l0.5 0.5 1.5 -1.5" stroke="white" stroke-width="0.5" />
                 </svg>
             </div>
-            <div class="game-title" id="coming-soon-3">Demnächst verfügbar</div>
-        </div>
+            <div class="game-title" id="matching-game-title">Zahlen-Zuordnungsspiel</div>
+        </a>
+        
         
         <div class="game-button coming-soon">
             <div class="game-icon">
@@ -277,13 +306,25 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const languageSelect = document.getElementById('language-select');
+    
+            if (!languageSelect) {
+                console.error('Language select element not found!');
+                return;
+            }
+            
+            // Add event listener for language changes
+            languageSelect.addEventListener('change', changeLanguage);
             const pageTitle = document.getElementById('page-title');
             const numbersGameTitle = document.getElementById('numbers-game-title');
             const balloonGameTitle = document.getElementById('balloon-game-title');
             const sortingGameTitle = document.getElementById('sorting-game-title');
+            const sudokuGameTitle = document.getElementById('sudoku-game-title');
+            const matchingGameTitle = document.getElementById('matching-game-title');
             const numbersGameLink = document.getElementById('numbers-game-link');
             const balloonGameLink = document.getElementById('balloon-game-link');
             const sortingGameLink = document.getElementById('sorting-game-link');
+            const sudokuGameLink = document.getElementById('sudoku-game-link');
+            const matchingGameLink = document.getElementById('matching-game-link');
             const comingSoonElements = [];
             
             for (let i = 1; i <= 7; i++) {
@@ -297,15 +338,18 @@
                     'numbers-game-title': 'Number Comparison Game',
                     'balloon-game-title': 'Math Balloon Game',
                     'sorting-game-title': 'Number Sorting Game',
+                    'sudoku-game-title': 'Sudoku 4x4',
+                    'matching-game-title': 'Number Matching Game',
                     'coming-soon': 'Coming Soon',
                     'footer-text': '© 2025 Uncle Jakob'
-                
                 },
                 'de': {
                     'page-title': 'Spielesammlung',
                     'numbers-game-title': 'Zahlenvergleichsspiel',
                     'balloon-game-title': 'Mathe-Luftballonspiel',
                     'sorting-game-title': 'Zahlen-Sortierspiel',
+                    'sudoku-game-title': 'Sudoku 4x4',
+                    'matching-game-title': 'Zahlen-Zuordnungsspiel',
                     'coming-soon': 'Demnächst verfügbar',
                     'footer-text': '© 2025 Onkel Jakob'
                 },
@@ -314,6 +358,8 @@
                     'numbers-game-title': 'Jeu de Comparaison de Nombres',
                     'balloon-game-title': 'Jeu de Ballons Mathématiques',
                     'sorting-game-title': 'Jeu de Tri de Nombres',
+                    'sudoku-game-title': 'Sudoku 4x4',
+                    'matching-game-title': 'Jeu d\'Association de Nombres',
                     'coming-soon': 'Bientôt Disponible',
                     'footer-text': '© 2025 Oncle Jakob'
                 },
@@ -322,31 +368,36 @@
                     'numbers-game-title': 'Juego de Comparación de Números',
                     'balloon-game-title': 'Juego de Globos Matemáticos',
                     'sorting-game-title': 'Juego de Ordenar Números',
+                    'sudoku-game-title': 'Sudoku 4x4',
+                    'matching-game-title': 'Juego de Emparejamiento de Números',
                     'coming-soon': 'Próximamente',
-                    'footer-text': '© 2025 Tio Jakob'
+                    'footer-text': '© 2025 Tío Jakob'
                 },
                 'pl': {
                     'page-title': 'Kolekcja Gier',
                     'numbers-game-title': 'Gra Porównywania Liczb',
                     'balloon-game-title': 'Gra Matematyczne Balony',
                     'sorting-game-title': 'Gra Sortowanie Liczb',
+                    'sudoku-game-title': 'Sudoku 4x4',
+                    'matching-game-title': 'Gra Dopasowywanie Liczb',
                     'coming-soon': 'Wkrótce Dostępne',
                     'footer-text': '© 2025 Wujek Jakob'
                 }
             };
-
-            
+                       
             // Detect browser language
             function detectLanguage() {
                 // Check URL parameter first
                 const urlParams = new URLSearchParams(window.location.search);
                 const langParam = urlParams.get('lang');
+                console.log('URL language parameter:', langParam);
                 if (langParam && translations[langParam]) {
                     return langParam;
                 }
                 
                 // Check localStorage next
                 const storedLang = localStorage.getItem('preferredLanguage');
+                console.log('Stored language preference:', storedLang);
                 if (storedLang && translations[storedLang]) {
                     return storedLang;
                 }
@@ -354,6 +405,7 @@
                 // Finally, check browser language
                 const browserLang = navigator.language || navigator.userLanguage;
                 const shortLang = browserLang.split('-')[0]; // Get primary language code
+                console.log('Browser language:', browserLang, 'Short language code:', shortLang);
                 
                 // Check if we support this language
                 if (translations[shortLang]) {
@@ -361,22 +413,34 @@
                 }
                 
                 // Default to German if language not supported
+                console.log('Defaulting to German');
                 return 'de';
             }
+
             
             // Set initial language based on detection
             const initialLanguage = detectLanguage();
             languageSelect.value = initialLanguage;
             document.documentElement.lang = initialLanguage;
-            
+
             // Apply initial language
             applyLanguage(initialLanguage);
+
             
             // Add event listener for language changes
             languageSelect.addEventListener('change', changeLanguage);
             
             function changeLanguage() {
                 const currentLanguage = languageSelect.value;
+                console.log('Changing language to:', currentLanguage);
+                
+                // Check if the language is supported
+                if (!translations[currentLanguage]) {
+                    console.error('Unsupported language:', currentLanguage);
+                    return;
+                }
+                
+                // Apply the language
                 applyLanguage(currentLanguage);
                 
                 // Store the language preference in localStorage
@@ -387,32 +451,52 @@
                 url.searchParams.set('lang', currentLanguage);
                 window.history.replaceState({}, '', url);
             }
+
             
             function applyLanguage(langCode) {
+                console.log('Applying language:', langCode);
                 const lang = translations[langCode];
+                
+                if (!lang) {
+                    console.error('Language not found in translations:', langCode);
+                    return;
+                }
                 
                 // Update UI elements
                 pageTitle.textContent = lang['page-title'];
                 numbersGameTitle.textContent = lang['numbers-game-title'];
                 balloonGameTitle.textContent = lang['balloon-game-title'];
                 sortingGameTitle.textContent = lang['sorting-game-title'];
+                sudokuGameTitle.textContent = lang['sudoku-game-title'];
+                matchingGameTitle.textContent = lang['matching-game-title'];
                 document.title = lang['page-title'];
-                document.getElementById('footer-text').textContent = lang['footer-text'];
-
+                
+                // Update footer text if it exists
+                const footerText = document.getElementById('footer-text');
+                if (footerText && lang['footer-text']) {
+                    footerText.textContent = lang['footer-text'];
+                }
+                
                 // Update all "coming soon" elements
-                comingSoonElements.forEach(element => {
+                for (let i = 1; i <= 7; i++) {
+                    const element = document.getElementById(`coming-soon-${i}`);
                     if (element) {
                         element.textContent = lang['coming-soon'];
                     }
-                });
+                }
                 
                 // Update document language
                 document.documentElement.lang = langCode;
                 
                 // Update href for game links to include language parameter
-                numbersGameLink.href = `numbers_game.html?lang=${langCode}`;
-                balloonGameLink.href = `balloon.html?lang=${langCode}`;
+                if (numbersGameLink) numbersGameLink.href = `numbers_game.html?lang=${langCode}`;
+                if (balloonGameLink) balloonGameLink.href = `balloon.html?lang=${langCode}`;
+                if (sortingGameLink) sortingGameLink.href = `sort_numbers.html?lang=${langCode}`;
+                if (sudokuGameLink) sudokuGameLink.href = `sudoku.html?lang=${langCode}`;
+                if (matchingGameLink) matchingGameLink.href = `matching_numbers.html?lang=${langCode}`;
             }
+
+
         });
     </script>
     
