@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahlen-Sortierspiel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .settings-row {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .settings-group {
+            margin: 10px;
+        }
+        
+        label {
+            margin-right: 10px;
+        }
+        
+        select, button {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0b7dda;
+        }
+        
+        .game-area {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .instructions {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF5722;
+            margin: 10px 0;
+        }
+        
+        .numbers-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            min-height: 80px;
+        }
+        
+        .target-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            min-height: 80px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border: 2px dashed #2196F3;
+            border-radius: 8px;
+        }
+        
+        .number-card {
+            width: 60px;
+            height: 60px;
+            background-color: #2196F3;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+        
+        .number-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .number-card.dragging {
+            opacity: 0.5;
+        }
+        
+        .number-card.correct {
+            background-color: #4CAF50;
+        }
+        
+        .number-card.wrong {
+            background-color: #F44336;
+        }
+        
+        .target-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .success {
+            color: #4CAF50;
+        }
+        
+        .error {
+            color: #F44336;
+        }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        .high-scores {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .high-scores h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .scores-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .scores-table th, .scores-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .scores-table th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        
+        .scores-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .back-to-menu {
+            margin: 20px auto;
+            text-align: center;
+        }
+        
+        .back-to-menu a {
+            color: #2196F3;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .back-to-menu a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .settings-group {
+                margin: 5px 0;
+            }
+            
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .number-card {
+                width: 50px;
+                height: 50px;
+                font-size: 16px;
+            }
+            
+            .target-slot {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <select id="language-select">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="pl">Polski</option>
+        </select>
+    </div>
+    
+    <h1 id="title">Zahlen-Sortierspiel</h1>
+    
+    <div class="game-container">
+        <div class="settings" id="settings-panel">
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="number-type" id="number-type-label">Zahlentyp:</label>
+                    <select id="number-type">
+                        <option value="integers">Ganze Zahlen</option>
+                        <option value="decimals">Dezimalzahlen</option>
+                        <option value="fractions">Brüche</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="difficulty" id="difficulty-label">Schwierigkeit:</label>
+                    <select id="difficulty">
+                        <option value="easy">Leicht</option>
+                        <option value="medium">Mittel</option>
+                        <option value="hard">Schwer</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="order-type" id="order-type-label">Sortierung:</label>
+                    <select id="order-type">
+                        <option value="ascending">Aufsteigend</option>
+                        <option value="descending">Absteigend</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="game-mode" id="game-mode-label">Spielmodus:</label>
+                    <select id="game-mode">
+                        <option value="practice">Übungsmodus</option>
+                        <option value="timed">Zeitmodus</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="start-btn">Spiel starten</button>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div class="instructions" id="instructions">Ordne die Zahlen in aufsteigender Reihenfolge an.</div>
+            
+            <div id="timer-container" style="display: none;">
+                <div class="timer"><span id="timer-label">Zeit:</span> <span id="timer">60</span>s</div>
+            </div>
+            
+            <div class="numbers-container" id="numbers-container">
+                <!-- Number cards will be generated here -->
+            </div>
+            
+            <div class="target-container" id="target-container">
+                <!-- Target slots will be generated here -->
+            </div>
+            
+            <div class="result" id="result"></div>
+            
+            <div class="controls">
+                <button id="check-btn">Überprüfen</button>
+                <button id="new-round-btn">Neue Runde</button>
+                <button id="back-btn">Zurück zu Einstellungen</button>
+            </div>
+        </div>
+        
+        <div class="high-scores" id="high-scores-panel">
+            <h2 id="high-scores-title">Bestenliste</h2>
+            <table class="scores-table" id="scores-table">
+                <thead>
+                    <tr>
+                        <th id="th-type">Zahlentyp</th>
+                        <th id="th-difficulty">Schwierigkeit</th>
+                        <th id="th-order">Sortierung</th>
+                        <th id="th-mode">Modus</th>
+                        <th id="th-score">Punktzahl</th>
+                    </tr>
+                </thead>
+                <tbody id="scores-body">
+                    <!-- High scores will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="back-to-menu">
+        <a href="index.html" id="back-link">Zurück zum Spielemenü</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const languageSelect = document.getElementById('language-select');
+            const titleElement = document.getElementById('title');
+            const settingsPanel = document.getElementById('settings-panel');
+            const gameArea = document.getElementById('game-area');
+            const highScoresPanel = document.getElementById('high-scores-panel');
+            const numberTypeSelect = document.getElementById('number-type');
+            const difficultySelect = document.getElementById('difficulty');
+            const orderTypeSelect = document.getElementById('order-type');
+            const gameModeSelect = document.getElementById('game-mode');
+            const startBtn = document.getElementById('start-btn');
+            const checkBtn = document.getElementById('check-btn');
+            const newRoundBtn = document.getElementById('new-round-btn');
+            const backBtn = document.getElementById('back-btn');
+            const instructionsElement = document.getElementById('instructions');
+            const numbersContainer = document.getElementById('numbers-container');
+            const targetContainer = document.getElementById('target-container');
+            const resultElement = document.getElementById('result');
+            const timerContainer = document.getElementById('timer-container');
+            const timerElement = document.getElementById('timer');
+            const scoresBody = document.getElementById('scores-body');
+            const backLink = document.getElementById('back-link');
+            
+            // Game variables
+            let currentLanguage = 'de';
+            let numberType = 'integers';
+            let difficulty = 'easy';
+            let orderType = 'ascending';
+            let gameMode = 'practice';
+            let numbers = [];
+            let correctOrder = [];
+            let timerInterval;
+            let timeLeft = 60;
+            let score = 0;
+            let rounds = 0;
+            let highScores = [];
+            
+            // Language translations
+            const translations = {
+                'en': {
+                    'title': 'Number Sorting Game',
+                    'number-type-label': 'Number Type:',
+                    'difficulty-label': 'Difficulty:',
+                    'order-type-label': 'Order:',
+                    'game-mode-label': 'Game Mode:',
+                    'start-btn': 'Start Game',
+                    'check-btn': 'Check',
+                    'new-round-btn': 'New Round',
+                    'back-btn': 'Back to Settings',
+                    'timer-label': 'Time:',
+                    'instructions-ascending': 'Arrange the numbers in ascending order (smallest to largest).',
+                    'instructions-descending': 'Arrange the numbers in descending order (largest to smallest).',
+                    'correct': 'Correct! Well done!',
+                    'wrong': 'Not quite right. Try again!',
+                    'time-up': 'Time\'s up! Game over.',
+                    'score': 'Score: ',
+                    'high-scores-title': 'High Scores',
+                    'back-link': 'Back to Games Menu',
+                    'th-type': 'Number Type',
+                    'th-difficulty': 'Difficulty',
+                    'th-order': 'Order',
+                    'th-mode': 'Mode',
+                    'th-score': 'Score',
+                    'number-types': {
+                        'integers': 'Integers',
+                        'decimals': 'Decimals',
+                        'fractions': 'Fractions'
+                    },
+                    'difficulties': {
+                        'easy': 'Easy',
+                        'medium': 'Medium',
+                        'hard': 'Hard'
+                    },
+                    'orders': {
+                        'ascending': 'Ascending',
+                        'descending': 'Descending'
+                    },
+                    'modes': {
+                        'practice': 'Practice Mode',
+                        'timed': 'Timed Mode'
+                    }
+                },
+                'de': {
+                    'title': 'Zahlen-Sortierspiel',
+                    'number-type-label': 'Zahlentyp:',
+                    'difficulty-label': 'Schwierigkeit:',
+                    'order-type-label': 'Sortierung:',
+                    'game-mode-label': 'Spielmodus:',
+                    'start-btn': 'Spiel starten',
+                    'check-btn': 'Überprüfen',
+                    'new-round-btn': 'Neue Runde',
+                    'back-btn': 'Zurück zu Einstellungen',
+                    'timer-label': 'Zeit:',
+                    'instructions-ascending': 'Ordne die Zahlen in aufsteigender Reihenfolge an (kleinste bis größte).',
+                    'instructions-descending': 'Ordne die Zahlen in absteigender Reihenfolge an (größte bis kleinste).',
+                    'correct': 'Richtig! Gut gemacht!',
+                    'wrong': 'Nicht ganz richtig. Versuche es nochmal!',
+                    'time-up': 'Zeit abgelaufen! Spiel vorbei.',
+                    'score': 'Punktzahl: ',
+                    'high-scores-title': 'Bestenliste',
+                    'back-link': 'Zurück zum Spielemenü',
+                    'th-type': 'Zahlentyp',
+                    'th-difficulty': 'Schwierigkeit',
+                    'th-order': 'Sortierung',
+                    'th-mode': 'Modus',
+                    'th-score': 'Punktzahl',
+                    'number-types': {
+                        'integers': 'Ganze Zahlen',
+                        'decimals': 'Dezimalzahlen',
+                        'fractions': 'Brüche'
+                    },
+                    'difficulties': {
+                        'easy': 'Leicht',
+                        'medium': 'Mittel',
+                        'hard': 'Schwer'
+                    },
+                    'orders': {
+                        'ascending': 'Aufsteigend',
+                        'descending': 'Absteigend'
+                    },
+                    'modes': {
+                        'practice': 'Übungsmodus',
+                        'timed': 'Zeitmodus'
+                    }
+                },
+                'fr': {
+                    'title': 'Jeu de Tri de Nombres',
+                    'number-type-label': 'Type de Nombres:',
+                    'difficulty-label': 'Difficulté:',
+                    'order-type-label': 'Ordre:',
+                    'game-mode-label': 'Mode de Jeu:',
+                    'start-btn': 'Commencer le Jeu',
+                    'check-btn': 'Vérifier',
+                    'new-round-btn': 'Nouvelle Manche',
+                    'back-btn': 'Retour aux Paramètres',
+                    'timer-label': 'Temps:',
+                    'instructions-ascending': 'Arrangez les nombres par ordre croissant (du plus petit au plus grand).',
+                    'instructions-descending': 'Arrangez les nombres par ordre décroissant (du plus grand au plus petit).',
+                    'correct': 'Correct! Bien joué!',
+                    'wrong': 'Pas tout à fait correct. Essayez encore!',
+                    'time-up': 'Temps écoulé! Partie terminée.',
+                    'score': 'Score: ',
+                    'high-scores-title': 'Meilleurs Scores',
+                    'back-link': 'Retour au Menu des Jeux',
+                    'th-type': 'Type de Nombres',
+                    'th-difficulty': 'Difficulté',
+                    'th-order': 'Ordre',
+                    'th-mode': 'Mode',
+                    'th-score': 'Score',
+                    'number-types': {
+                        'integers': 'Entiers',
+                        'decimals': 'Décimaux',
+                        'fractions': 'Fractions'
+                    },
+                    'difficulties': {
+                        'easy': 'Facile',
+                        'medium': 'Moyen',
+                        'hard': 'Difficile'
+                    },
+                    'orders': {
+                        'ascending': 'Croissant',
+                        'descending': 'Décroissant'
+                    },
+                    'modes': {
+                        'practice': 'Mode Entraînement',
+                        'timed': 'Mode Chronométré'
+                    }
+                },
+                'es': {
+                    'title': 'Juego de Ordenar Números',
+                    'number-type-label': 'Tipo de Números:',
+                    'difficulty-label': 'Dificultad:',
+                    'order-type-label': 'Orden:',
+                    'game-mode-label': 'Modo de Juego:',
+                    'start-btn': 'Iniciar Juego',
+                    'check-btn': 'Comprobar',
+                    'new-round-btn': 'Nueva Ronda',
+                    'back-btn': 'Volver a Configuración',
+                    'timer-label': 'Tiempo:',
+                    'instructions-ascending': 'Ordena los números en orden ascendente (de menor a mayor).',
+                    'instructions-descending': 'Ordena los números en orden descendente (de mayor a menor).',
+                    'correct': '¡Correcto! ¡Bien hecho!',
+                    'wrong': 'No del todo correcto. ¡Inténtalo de nuevo!',
+                    'time-up': '¡Se acabó el tiempo! Fin del juego.',
+                    'score': 'Puntuación: ',
+                    'high-scores-title': 'Puntuaciones Altas',
+                    'back-link': 'Volver al Menú de Juegos',
+                    'th-type': 'Tipo de Números',
+                    'th-difficulty': 'Dificultad',
+                    'th-order': 'Orden',
+                    'th-mode': 'Modo',
+                    'th-score': 'Puntuación',
+                    'number-types': {
+                        'integers': 'Enteros',
+                        'decimals': 'Decimales',
+                        'fractions': 'Fracciones'
+                    },
+                    'difficulties': {
+                        'easy': 'Fácil',
+                        'medium': 'Medio',
+                        'hard': 'Difícil'
+                    },
+                    'orders': {
+                        'ascending': 'Ascendente',
+                        'descending': 'Descendente'
+                    },
+                    'modes': {
+                        'practice': 'Modo Práctica',
+                        'timed': 'Modo Contrarreloj'
+                    }
+                },
+                'pl': {
+                    'title': 'Gra Sortowanie Liczb',
+                    'number-type-label': 'Typ Liczb:',
+                    'difficulty-label': 'Poziom trudności:',
+                    'order-type-label': 'Kolejność:',
+                    'game-mode-label': 'Tryb Gry:',
+                    'start-btn': 'Rozpocznij Grę',
+                    'check-btn': 'Sprawdź',
+                    'new-round-btn': 'Nowa Runda',
+                    'back-btn': 'Powrót do Ustawień',
+                    'timer-label': 'Czas:',
+                    'instructions-ascending': 'Ułóż liczby w kolejności rosnącej (od najmniejszej do największej).',
+                    'instructions-descending': 'Ułóż liczby w kolejności malejącej (od największej do najmniejszej).',
+                    'correct': 'Poprawnie! Dobra robota!',
+                    'wrong': 'Nie całkiem poprawnie. Spróbuj ponownie!',
+                    'time-up': 'Czas minął! Koniec gry.',
+                    'score': 'Wynik: ',
+                    'high-scores-title': 'Najlepsze Wyniki',
+                    'back-link': 'Powrót do Menu Gier',
+                    'th-type': 'Typ Liczb',
+                    'th-difficulty': 'Poziom trudności',
+                    'th-order': 'Kolejność',
+                    'th-mode': 'Tryb',
+                    'th-score': 'Wynik',
+                    'number-types': {
+                        'integers': 'Liczby całkowite',
+                        'decimals': 'Liczby dziesiętne',
+                        'fractions': 'Ułamki'
+                    },
+                    'difficulties': {
+                        'easy': 'Łatwy',
+                        'medium': 'Średni',
+                        'hard': 'Trudny'
+                    },
+                    'orders': {
+                        'ascending': 'Rosnąco',
+                        'descending': 'Malejąco'
+                    },
+                    'modes': {
+                        'practice': 'Tryb Ćwiczeń',
+                        'timed': 'Tryb na Czas'
+                    }
+                }
+            };
+            
+            // Detect browser language
+            function detectLanguage() {
+                // Check URL parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const langParam = urlParams.get('lang');
+                if (langParam && translations[langParam]) {
+                    return langParam;
+                }
+                
+                // Check localStorage next
+                const storedLang = localStorage.getItem('preferredLanguage');
+                if (storedLang && translations[storedLang]) {
+                    return storedLang;
+                }
+                
+                // Finally, check browser language
+                const browserLang = navigator.language || navigator.userLanguage;
+                const shortLang = browserLang.split('-')[0]; // Get primary language code
+                
+                // Check if we support this language
+                if (translations[shortLang]) {
+                    return shortLang;
+                }
+                
+                // Default to German if language not supported
+                return 'de';
+            }
+            
+            // Set initial language based on detection
+            currentLanguage = detectLanguage();
+            languageSelect.value = currentLanguage;
+            document.documentElement.lang = currentLanguage;
+            
+            // Apply initial language
+            updateLanguage();
+            
+            // Load high scores
+            loadHighScores();
+            displayHighScores();
+            
+            // Set up event listeners
+            startBtn.addEventListener('click', startGame);
+            checkBtn.addEventListener('click', checkOrder);
+            newRoundBtn.addEventListener('click', startNewRound);
+            backBtn.addEventListener('click', backToSettings);
+            languageSelect.addEventListener('change', changeLanguage);
+            
+            // Update back link to include language parameter
+            backLink.href = `index.html?lang=${currentLanguage}`;
+            
+            function changeLanguage() {
+                currentLanguage = languageSelect.value;
+                updateLanguage();
+                
+                // Store the language preference in localStorage
+                localStorage.setItem('preferredLanguage', currentLanguage);
+                
+                // Update the URL parameter without reloading the page
+                const url = new URL(window.location);
+                url.searchParams.set('lang', currentLanguage);
+                window.history.replaceState({}, '', url);
+                
+                // Update back link
+                backLink.href = `index.html?lang=${currentLanguage}`;
+                
+                // Update instructions if game is active
+                if (gameArea.style.display === 'block') {
+                    updateInstructions();
+                }
+                
+                // Update high scores display
+                displayHighScores();
+            }
+            
+            function updateLanguage() {
+                const lang = translations[currentLanguage];
+                
+                // Update static UI elements
+                titleElement.textContent = lang['title'];
+                document.title = lang['title'];
+                document.getElementById('number-type-label').textContent = lang['number-type-label'];
+                document.getElementById('difficulty-label').textContent = lang['difficulty-label'];
+                document.getElementById('order-type-label').textContent = lang['order-type-label'];
+                document.getElementById('game-mode-label').textContent = lang['game-mode-label'];
+                startBtn.textContent = lang['start-btn'];
+                checkBtn.textContent = lang['check-btn'];
+                newRoundBtn.textContent = lang['new-round-btn'];
+                backBtn.textContent = lang['back-btn'];
+                document.getElementById('timer-label').textContent = lang['timer-label'];
+                document.getElementById('high-scores-title').textContent = lang['high-scores-title'];
+                backLink.textContent = lang['back-link'];
+                document.getElementById('th-type').textContent = lang['th-type'];
+                document.getElementById('th-difficulty').textContent = lang['th-difficulty'];
+                document.getElementById('th-order').textContent = lang['th-order'];
+                document.getElementById('th-mode').textContent = lang['th-mode'];
+                document.getElementById('th-score').textContent = lang['th-score'];
+                
+                // Update document language
+                document.documentElement.lang = currentLanguage;
+                
+                // Update select options
+                updateNumberTypeOptions();
+                updateDifficultyOptions();
+                updateOrderTypeOptions();
+                updateGameModeOptions();
+            }
+            
+            function updateNumberTypeOptions() {
+                const lang = translations[currentLanguage]['number-types'];
+                const currentValue = numberTypeSelect.value;
+                
+                // Clear and rebuild options
+                numberTypeSelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'integers': lang['integers'],
+                    'decimals': lang['decimals'],
+                    'fractions': lang['fractions']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    numberTypeSelect.appendChild(option);
+                }
+                
+                // Restore selection
+                numberTypeSelect.value = currentValue;
+            }
+            
+            function updateDifficultyOptions() {
+                const lang = translations[currentLanguage]['difficulties'];
+                const currentValue = difficultySelect.value;
+                
+                // Clear and rebuild options
+                difficultySelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'easy': lang['easy'],
+                    'medium': lang['medium'],
+                    'hard': lang['hard']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    difficultySelect.appendChild(option);
+                }
+                
+                // Restore selection
+                difficultySelect.value = currentValue;
+            }
+            
+            function updateOrderTypeOptions() {
+                const lang = translations[currentLanguage]['orders'];
+                const currentValue = orderTypeSelect.value;
+                
+                // Clear and rebuild options
+                orderTypeSelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'ascending': lang['ascending'],
+                    'descending': lang['descending']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    orderTypeSelect.appendChild(option);
+                }
+                
+                // Restore selection
+                orderTypeSelect.value = currentValue;
+            }
+            
+            function updateGameModeOptions() {
+                const lang = translations[currentLanguage]['modes'];
+                const currentValue = gameModeSelect.value;
+                
+                // Clear and rebuild options
+                gameModeSelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'practice': lang['practice'],
+                    'timed': lang['timed']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    gameModeSelect.appendChild(option);
+                }
+                
+                // Restore selection
+                gameModeSelect.value = currentValue;
+            }
+            
+            function updateInstructions() {
+                const lang = translations[currentLanguage];
+                if (orderType === 'ascending') {
+                    instructionsElement.textContent = lang['instructions-ascending'];
+                } else {
+                    instructionsElement.textContent = lang['instructions-descending'];
+                }
+            }
+            
+            function startGame() {
+                // Get selected options
+                numberType = numberTypeSelect.value;
+                difficulty = difficultySelect.value;
+                orderType = orderTypeSelect.value;
+                gameMode = gameModeSelect.value;
+                
+                // Reset game state
+                score = 0;
+                rounds = 0;
+                
+                // Show game area, hide settings
+                settingsPanel.style.display = 'none';
+                highScoresPanel.style.display = 'none';
+                gameArea.style.display = 'block';
+                
+                // Update instructions
+                updateInstructions();
+                
+                // Set up timer if in timed mode
+                if (gameMode === 'timed') {
+                    timeLeft = 60;
+                    timerElement.textContent = timeLeft;
+                    timerContainer.style.display = 'block';
+                    startTimer();
+                } else {
+                    timerContainer.style.display = 'none';
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                    }
+                }
+                
+                // Generate numbers for first round
+                generateNumbers();
+            }
+            
+            function startTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 10) {
+                        timerElement.style.color = '#F44336';
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        endGame();
+                    }
+                }, 1000);
+            }
+            
+            function generateNumbers() {
+                // Clear previous numbers
+                numbersContainer.innerHTML = '';
+                targetContainer.innerHTML = '';
+                resultElement.textContent = '';
+                resultElement.className = 'result';
+                
+                // Determine number of cards based on difficulty
+                let count;
+                switch (difficulty) {
+                    case 'easy': count = 5; break;
+                    case 'medium': count = 8; break;
+                    case 'hard': count = 12; break;
+                    default: count = 5;
+                }
+                
+                // Generate numbers based on type and difficulty
+                numbers = [];
+                
+                switch (numberType) {
+                    case 'integers':
+                        generateIntegers(count);
+                        break;
+                    case 'decimals':
+                        generateDecimals(count);
+                        break;
+                    case 'fractions':
+                        generateFractions(count);
+                        break;
+                    default:
+                        generateIntegers(count);
+                }
+                
+                // Create number cards
+                numbers.forEach((num, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'number-card';
+                    card.textContent = num.display;
+                    card.dataset.value = num.value;
+                    card.dataset.index = index;
+                    card.draggable = true;
+                    
+                    // Add drag events
+                    card.addEventListener('dragstart', dragStart);
+                    card.addEventListener('dragend', dragEnd);
+                    
+                    numbersContainer.appendChild(card);
+                    
+                    // Create target slot
+                    const slot = document.createElement('div');
+                    slot.className = 'target-slot';
+                    slot.dataset.index = index;
+                    
+                    // Add drop events
+                    slot.addEventListener('dragover', dragOver);
+                    slot.addEventListener('dragenter', dragEnter);
+                    slot.addEventListener('dragleave', dragLeave);
+                    slot.addEventListener('drop', drop);
+                    
+                    targetContainer.appendChild(slot);
+                });
+                
+                // Determine correct order
+                correctOrder = [...numbers].sort((a, b) => {
+                    return orderType === 'ascending' ? a.value - b.value : b.value - a.value;
+                });
+            }
+            
+            function generateIntegers(count) {
+                let min, max;
+                
+                switch (difficulty) {
+                    case 'easy':
+                        min = 1;
+                        max = 20;
+                        break;
+                    case 'medium':
+                        min = -20;
+                        max = 50;
+                        break;
+                    case 'hard':
+                        min = -100;
+                        max = 100;
+                        break;
+                    default:
+                        min = 1;
+                        max = 20;
+                }
+                
+                // Generate unique random integers
+                const usedNumbers = new Set();
+                
+                while (numbers.length < count) {
+                    const num = Math.floor(Math.random() * (max - min + 1)) + min;
+                    
+                    if (!usedNumbers.has(num)) {
+                        usedNumbers.add(num);
+                        numbers.push({
+                            value: num,
+                            display: num.toString()
+                        });
+                    }
+                }
+            }
+            
+            function generateDecimals(count) {
+                let min, max, precision;
+                
+                switch (difficulty) {
+                    case 'easy':
+                        min = 0;
+                        max = 10;
+                        precision = 1;
+                        break;
+                    case 'medium':
+                        min = -10;
+                        max = 20;
+                        precision = 2;
+                        break;
+                    case 'hard':
+                        min = -50;
+                        max = 50;
+                        precision = 3;
+                        break;
+                    default:
+                        min = 0;
+                        max = 10;
+                        precision = 1;
+                }
+                
+                // Generate unique random decimals
+                const usedNumbers = new Set();
+                
+                while (numbers.length < count) {
+                    const num = parseFloat((Math.random() * (max - min) + min).toFixed(precision));
+                    const numStr = num.toFixed(precision);
+                    
+                    if (!usedNumbers.has(numStr)) {
+                        usedNumbers.add(numStr);
+                        numbers.push({
+                            value: num,
+                            display: numStr
+                        });
+                    }
+                }
+            }
+            
+            function generateFractions(count) {
+                let maxDenominator;
+                
+                switch (difficulty) {
+                    case 'easy':
+                        maxDenominator = 10;
+                        break;
+                    case 'medium':
+                        maxDenominator = 20;
+                        break;
+                    case 'hard':
+                        maxDenominator = 50;
+                        break;
+                    default:
+                        maxDenominator = 10;
+                }
+                
+                // Generate unique random fractions
+                const usedFractions = new Set();
+                
+                while (numbers.length < count) {
+                    let numerator, denominator;
+                    
+                    // For easy difficulty, use simple fractions
+                    if (difficulty === 'easy') {
+                        denominator = Math.floor(Math.random() * 9) + 2; // 2-10
+                        numerator = Math.floor(Math.random() * denominator) + 1; // 1 to denominator
+                    } else {
+                        denominator = Math.floor(Math.random() * (maxDenominator - 2)) + 2; // 2 to maxDenominator
+                        numerator = Math.floor(Math.random() * (maxDenominator * 2 - 1)) + 1; // 1 to maxDenominator*2
+                    }
+                    
+                    // Calculate decimal value for sorting
+                    const value = numerator / denominator;
+                    const fractionStr = `${numerator}/${denominator}`;
+                    
+                    if (!usedFractions.has(fractionStr)) {
+                        usedFractions.add(fractionStr);
+                        numbers.push({
+                            value: value,
+                            display: fractionStr
+                        });
+                    }
+                }
+            }
+            
+            // Drag and Drop Functions
+            function dragStart(e) {
+                e.target.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', e.target.dataset.index);
+            }
+            
+            function dragEnd(e) {
+                e.target.classList.remove('dragging');
+            }
+            
+            function dragOver(e) {
+                e.preventDefault();
+            }
+            
+            function dragEnter(e) {
+                e.preventDefault();
+                e.target.classList.add('drag-over');
+            }
+            
+            function dragLeave(e) {
+                e.target.classList.remove('drag-over');
+            }
+            
+            function drop(e) {
+                e.preventDefault();
+                e.target.classList.remove('drag-over');
+                
+                // Get the dragged card index
+                const cardIndex = e.dataTransfer.getData('text/plain');
+                const card = document.querySelector(`.number-card[data-index="${cardIndex}"]`);
+                
+                // If the target is a slot and doesn't already have a card
+                if (e.target.classList.contains('target-slot') && !e.target.hasChildNodes()) {
+                    e.target.appendChild(card);
+                }
+            }
+            
+            function checkOrder() {
+                // Get all cards in target container
+                const placedCards = targetContainer.querySelectorAll('.number-card');
+                
+                // Check if all slots are filled
+                if (placedCards.length !== numbers.length) {
+                    const lang = translations[currentLanguage];
+                    resultElement.textContent = lang['wrong'];
+                    resultElement.className = 'result error';
+                    return;
+                }
+                
+                // Check if order is correct
+                let isCorrect = true;
+                placedCards.forEach((card, index) => {
+                    const cardValue = parseFloat(card.dataset.value);
+                    const correctValue = correctOrder[index].value;
+                    
+                    if (cardValue !== correctValue) {
+                        isCorrect = false;
+                        card.classList.add('wrong');
+                    } else {
+                        card.classList.add('correct');
+                    }
+                });
+                
+                const lang = translations[currentLanguage];
+                
+                if (isCorrect) {
+                    resultElement.textContent = lang['correct'];
+                    resultElement.className = 'result success';
+                    
+                    // Update score in timed mode
+                    if (gameMode === 'timed') {
+                        score += 10;
+                        rounds++;
+                        
+                        // Add time bonus based on difficulty
+                        let timeBonus = 0;
+                        switch (difficulty) {
+                            case 'easy': timeBonus = 5; break;
+                            case 'medium': timeBonus = 10; break;
+                            case 'hard': timeBonus = 15; break;
+                        }
+                        
+                        timeLeft += timeBonus;
+                        timerElement.textContent = timeLeft;
+                        
+                        // Start new round after a short delay
+                        setTimeout(() => {
+                            startNewRound();
+                        }, 1500);
+                    }
+                } else {
+                    resultElement.textContent = lang['wrong'];
+                    resultElement.className = 'result error';
+                    
+                    // In timed mode, show correct order after a delay
+                    if (gameMode === 'timed') {
+                        setTimeout(() => {
+                            // Remove wrong/correct classes
+                            placedCards.forEach(card => {
+                                card.classList.remove('wrong', 'correct');
+                            });
+                        }, 1500);
+                    }
+                }
+            }
+            
+            function startNewRound() {
+                // Clear result
+                resultElement.textContent = '';
+                resultElement.className = 'result';
+                
+                // Generate new numbers
+                generateNumbers();
+            }
+            
+            function backToSettings() {
+                // Stop timer if running
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                
+                // Show settings, hide game area
+                settingsPanel.style.display = 'block';
+                highScoresPanel.style.display = 'block';
+                gameArea.style.display = 'none';
+                
+                // If in timed mode and score > 0, save high score
+                if (gameMode === 'timed' && score > 0) {
+                    saveHighScore();
+                    displayHighScores();
+                }
+            }
+            
+            function endGame() {
+                const lang = translations[currentLanguage];
+                resultElement.textContent = lang['time-up'];
+                resultElement.className = 'result error';
+                
+                // Save high score
+                if (score > 0) {
+                    saveHighScore();
+                }
+                
+                // Show settings and high scores after a delay
+                setTimeout(() => {
+                    settingsPanel.style.display = 'block';
+                    highScoresPanel.style.display = 'block';
+                    gameArea.style.display = 'none';
+                    displayHighScores();
+                }, 2000);
+            }
+            
+            function saveHighScore() {
+                // Create high score entry
+                const entry = {
+                    type: numberType,
+                    difficulty: difficulty,
+                    order: orderType,
+                    mode: gameMode,
+                    score: score,
+                    date: new Date().toISOString()
+                };
+                
+                // Add to high scores
+                highScores.push(entry);
+                
+                // Sort by score (descending)
+                highScores.sort((a, b) => b.score - a.score);
+                
+                // Keep only top 10
+                if (highScores.length > 10) {
+                    highScores = highScores.slice(0, 10);
+                }
+                
+                // Save to local storage
+                localStorage.setItem('sortingGameHighScores', JSON.stringify(highScores));
+            }
+            
+            function loadHighScores() {
+                const savedScores = localStorage.getItem('sortingGameHighScores');
+                if (savedScores) {
+                    highScores = JSON.parse(savedScores);
+                }
+            }
+            
+            function displayHighScores() {
+                const lang = translations[currentLanguage];
+                scoresBody.innerHTML = '';
+                
+                if (highScores.length === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 5;
+                    cell.textContent = 'No high scores yet';
+                    cell.style.textAlign = 'center';
+                    row.appendChild(cell);
+                    scoresBody.appendChild(row);
+                    return;
+                }
+                
+                // Display each high score
+                highScores.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Number type cell
+                    const typeCell = document.createElement('td');
+                    typeCell.textContent = lang['number-types'][entry.type];
+                    row.appendChild(typeCell);
+                    
+                    // Difficulty cell
+                    const diffCell = document.createElement('td');
+                    diffCell.textContent = lang['difficulties'][entry.difficulty];
+                    row.appendChild(diffCell);
+                    
+                    // Order cell
+                    const orderCell = document.createElement('td');
+                    orderCell.textContent = lang['orders'][entry.order];
+                    row.appendChild(orderCell);
+                    
+                    // Mode cell
+                    const modeCell = document.createElement('td');
+                    modeCell.textContent = lang['modes'][entry.mode];
+                    row.appendChild(modeCell);
+                    
+                    // Score cell
+                    const scoreCell = document.createElement('td');
+                    scoreCell.textContent = entry.score;
+                    row.appendChild(scoreCell);
+                    
+                    scoresBody.appendChild(row);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -156,16 +156,31 @@
             <div class="game-title" id="balloon-game-title">Mathe-Luftballonspiel</div>
         </a>
         
-        <div class="game-button coming-soon">
+        <!-- Number Sorting Game -->
+        <a href="sort_numbers.html" class="game-button" id="sorting-game-link">
             <div class="game-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 8v4" />
-                    <path d="M12 16h.01" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Background rectangle -->
+                    <rect x="2" y="2" width="20" height="20" rx="2" fill="#ECEFF1" stroke="#78909C" stroke-width="1" />
+                    
+                    <!-- Sorting arrows -->
+                    <path d="M7 8l3 -3l3 3" stroke="#4CAF50" stroke-width="2" />
+                    <path d="M7 16l3 3l3 -3" stroke="#F44336" stroke-width="2" />
+                    
+                    <!-- Number lines -->
+                    <line x1="16" y1="8" x2="20" y2="8" stroke="#333" stroke-width="2" />
+                    <line x1="16" y1="12" x2="18" y2="12" stroke="#333" stroke-width="2" />
+                    <line x1="16" y1="16" x2="19" y2="16" stroke="#333" stroke-width="2" />
+                    
+                    <!-- Small numbers -->
+                    <text x="5" y="12" font-family="Arial" font-size="6" fill="#333" text-anchor="middle">1</text>
+                    <text x="10" y="12" font-family="Arial" font-size="6" fill="#333" text-anchor="middle">2</text>
+                    <text x="15" y="12" font-family="Arial" font-size="6" fill="#333" text-anchor="middle">3</text>
                 </svg>
             </div>
-            <div class="game-title" id="coming-soon-1">Demnächst verfügbar</div>
-        </div>
+            <div class="game-title" id="sorting-game-title">Zahlen-Sortierspiel</div>
+        </a>
+
         
         <div class="game-button coming-soon">
             <div class="game-icon">
@@ -240,9 +255,12 @@
             const pageTitle = document.getElementById('page-title');
             const numbersGameTitle = document.getElementById('numbers-game-title');
             const balloonGameTitle = document.getElementById('balloon-game-title');
+            const sortingGameTitle = document.getElementById('sorting-game-title');
             const numbersGameLink = document.getElementById('numbers-game-link');
             const balloonGameLink = document.getElementById('balloon-game-link');
+            const sortingGameLink = document.getElementById('sorting-game-link');
             const comingSoonElements = [];
+
             
             for (let i = 1; i <= 7; i++) {
                 comingSoonElements.push(document.getElementById(`coming-soon-${i}`));
@@ -254,33 +272,39 @@
                     'page-title': 'Games Collection',
                     'numbers-game-title': 'Number Comparison Game',
                     'balloon-game-title': 'Math Balloon Game',
+                    'sorting-game-title': 'Number Sorting Game',
                     'coming-soon': 'Coming Soon'
                 },
                 'de': {
                     'page-title': 'Spielesammlung',
                     'numbers-game-title': 'Zahlenvergleichsspiel',
                     'balloon-game-title': 'Mathe-Luftballonspiel',
+                    'sorting-game-title': 'Zahlen-Sortierspiel',
                     'coming-soon': 'Demnächst verfügbar'
                 },
                 'fr': {
                     'page-title': 'Collection de Jeux',
                     'numbers-game-title': 'Jeu de Comparaison de Nombres',
                     'balloon-game-title': 'Jeu de Ballons Mathématiques',
+                    'sorting-game-title': 'Jeu de Tri de Nombres',
                     'coming-soon': 'Bientôt Disponible'
                 },
                 'es': {
                     'page-title': 'Colección de Juegos',
                     'numbers-game-title': 'Juego de Comparación de Números',
                     'balloon-game-title': 'Juego de Globos Matemáticos',
+                    'sorting-game-title': 'Juego de Ordenar Números',
                     'coming-soon': 'Próximamente'
                 },
                 'pl': {
                     'page-title': 'Kolekcja Gier',
                     'numbers-game-title': 'Gra Porównywania Liczb',
                     'balloon-game-title': 'Gra Matematyczne Balony',
+                    'sorting-game-title': 'Gra Sortowanie Liczb',
                     'coming-soon': 'Wkrótce Dostępne'
                 }
             };
+
             
             // Detect browser language
             function detectLanguage() {
@@ -341,6 +365,7 @@
                 pageTitle.textContent = lang['page-title'];
                 numbersGameTitle.textContent = lang['numbers-game-title'];
                 balloonGameTitle.textContent = lang['balloon-game-title'];
+                sortingGameTitle.textContent = lang['sorting-game-title'];
                 document.title = lang['page-title'];
                 
                 // Update all "coming soon" elements
