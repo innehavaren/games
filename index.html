@@ -1,6 +1,5 @@
-<!-- Landing Page -->
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -298,6 +297,14 @@
             function changeLanguage() {
                 const currentLanguage = languageSelect.value;
                 applyLanguage(currentLanguage);
+                
+                // Store the language preference in localStorage
+                localStorage.setItem('preferredLanguage', currentLanguage);
+                
+                // Update the URL parameter without reloading the page
+                const url = new URL(window.location);
+                url.searchParams.set('lang', currentLanguage);
+                window.history.replaceState({}, '', url);
             }
             
             function applyLanguage(langCode) {
@@ -306,6 +313,7 @@
                 // Update UI elements
                 pageTitle.textContent = lang['page-title'];
                 numbersGameTitle.textContent = lang['numbers-game-title'];
+                document.title = lang['page-title'];
                 
                 // Update all "coming soon" elements
                 comingSoonElements.forEach(element => {
@@ -315,8 +323,27 @@
                 // Update document language
                 document.documentElement.lang = langCode;
                 
-                // Update page title
-                document.title = lang['page-title'];
+                // Update href for numbers_game.html to include language parameter
+                const numbersGameLink = document.querySelector('a[href="numbers_game.html"]');
+                if (numbersGameLink) {
+                    numbersGameLink.href = `numbers_game.html?lang=${langCode}`;
+                }
+            }
+            
+            // Check for language parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+            
+            // Check for stored language preference
+            const storedLang = localStorage.getItem('preferredLanguage');
+            
+            // Priority: URL parameter > localStorage > browser language
+            if (langParam && translations[langParam]) {
+                languageSelect.value = langParam;
+                applyLanguage(langParam);
+            } else if (storedLang && translations[storedLang]) {
+                languageSelect.value = storedLang;
+                applyLanguage(storedLang);
             }
         });
     </script>

@@ -247,6 +247,7 @@
             <option value="en">English</option>
             <option value="fr">Français</option>
             <option value="es">Español</option>
+            <option value="pl">Polski</option>
         </select>
     </div>
     
@@ -435,11 +436,71 @@
                     'or-text': 'O',
                     'max': 'Máx',
                     'mode': 'Modo'
+                },
+                'pl': {
+                    'title': 'Gra Porównywania Liczb',
+                    'max-number-label': 'Maksymalna Liczba:',
+                    'game-mode-label': 'Tryb Gry:',
+                    'start-game': 'Rozpocznij Grę',
+                    'back-button': 'Powrót do Menu',
+                    'streak-label': 'Aktualna Seria:',
+                    'high-score-label': 'Najlepszy Wynik:',
+                    'timer-label': 'Czas:',
+                    'higher-mode': 'Znajdź Większą Liczbę',
+                    'lower-mode': 'Znajdź Mniejszą Liczbę',
+                    'timed-mode': 'Wyzwanie Czasowe',
+                    'higher-instruction': 'Dotknij większej liczby!',
+                    'lower-instruction': 'Dotknij mniejszej liczby!',
+                    'timed-instruction': 'Dotknij większej liczby! Pokonaj zegar!',
+                    'correct-message': 'Poprawnie!',
+                    'wrong-message': 'Źle! Koniec gry.',
+                    'timeout-message': 'Czas minął! Koniec gry.',
+                    'high-scores-title': 'Najlepsze Wyniki',
+                    'no-scores': 'Brak najlepszych wyników. Zacznij grać!',
+                    'or-text': 'LUB',
+                    'max': 'Maks',
+                    'mode': 'Tryb'
                 }
             };
             
+            // Detect browser language
+            function detectLanguage() {
+                // Check URL parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const langParam = urlParams.get('lang');
+                if (langParam && translations[langParam]) {
+                    return langParam;
+                }
+                
+                // Check localStorage next
+                const storedLang = localStorage.getItem('preferredLanguage');
+                if (storedLang && translations[storedLang]) {
+                    return storedLang;
+                }
+                
+                // Finally, check browser language
+                const browserLang = navigator.language || navigator.userLanguage;
+                const shortLang = browserLang.split('-')[0]; // Get primary language code
+                
+                // Check if we support this language
+                if (translations[shortLang]) {
+                    return shortLang;
+                }
+                
+                // Default to German if language not supported
+                return 'de';
+            }
+            
             // Load high scores from local storage
             loadHighScores();
+            
+            // Set initial language based on detection
+            currentLanguage = detectLanguage();
+            languageSelect.value = currentLanguage;
+            document.documentElement.lang = currentLanguage;
+            
+            // Apply initial language and display high scores
+            updateLanguage();
             displayHighScoresTable();
             
             // Set up event listeners
@@ -449,15 +510,17 @@
             number2Element.addEventListener('click', () => checkAnswer(2));
             languageSelect.addEventListener('change', changeLanguage);
             
-            // Initialize with default language
-            updateLanguage();
-            
             function changeLanguage() {
                 currentLanguage = languageSelect.value;
                 updateLanguage();
                 
-                // Update game mode options
-                updateGameModeOptions();
+                // Store the language preference in localStorage
+                localStorage.setItem('preferredLanguage', currentLanguage);
+                
+                // Update the URL parameter without reloading the page
+                const url = new URL(window.location);
+                url.searchParams.set('lang', currentLanguage);
+                window.history.replaceState({}, '', url);
                 
                 // Update game instruction if game is active
                 if (gameActive) {
@@ -470,6 +533,7 @@
                 
                 // Update static UI elements
                 titleElement.textContent = lang['title'];
+                document.title = lang['title'];
                 document.getElementById('max-number-label').textContent = lang['max-number-label'];
                 document.getElementById('game-mode-label').textContent = lang['game-mode-label'];
                 startButton.textContent = lang['start-game'];
@@ -799,6 +863,20 @@
                     scoresTableContainer.appendChild(noScores);
                 }
             }
+            
+            // Add a back to main menu link
+            const menuLink = document.createElement('div');
+            menuLink.style.marginTop = '20px';
+            menuLink.style.textAlign = 'center';
+            
+            const menuAnchor = document.createElement('a');
+            menuAnchor.href = `index.html?lang=${currentLanguage}`;
+            menuAnchor.textContent = translations[currentLanguage]['back-button'];
+            menuAnchor.style.textDecoration = 'none';
+            menuAnchor.style.color = '#2196F3';
+            
+            menuLink.appendChild(menuAnchor);
+            document.querySelector('.game-container').appendChild(menuLink);
         });
     </script>
 </body>
