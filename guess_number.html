@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahlenraten</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .settings-row {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .settings-group {
+            margin: 10px;
+        }
+        
+        label {
+            margin-right: 10px;
+        }
+        
+        select, button, input {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+            min-width: 100px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .game-area {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .hint-container {
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .hint {
+            font-weight: bold;
+            color: #2E7D32;
+        }
+        
+        .guess-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .guess-input input {
+            width: 80px;
+            text-align: center;
+            font-size: 24px;
+            margin: 0 10px;
+        }
+        
+        .message {
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .correct {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        
+        .wrong {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        
+        .history {
+            margin: 20px 0;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .history-item {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .too-high {
+            color: #d32f2f;
+        }
+        
+        .too-low {
+            color: #1976d2;
+        }
+        
+        .correct-guess {
+            color: #388e3c;
+            font-weight: bold;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f1f8e9;
+            border-radius: 5px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .number-range {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        
+        .number-line {
+            position: relative;
+            height: 40px;
+            margin: 20px 0;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+        }
+        
+        .number-marker {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            top: 5px;
+            transform: translateX(-50%);
+            color: white;
+            font-weight: bold;
+            line-height: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .range-highlight {
+            position: absolute;
+            height: 40px;
+            background-color: rgba(33, 150, 243, 0.3);
+            border-radius: 20px;
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .back-to-menu {
+            margin: 20px auto;
+            text-align: center;
+        }
+        
+        .back-to-menu a {
+            color: #2196F3;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .back-to-menu a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .settings-group {
+                margin: 5px 0;
+            }
+            
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <select id="language-select">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="pl">Polski</option>
+        </select>
+    </div>
+    
+    <h1 id="title">Zahlenraten</h1>
+    
+    <div class="game-container">
+        <div class="settings" id="settings-panel">
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="min-number" id="min-number-label">Kleinste Zahl:</label>
+                    <select id="min-number">
+                        <option value="0">0</option>
+                        <option value="1" selected>1</option>
+                        <option value="10">10</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="max-number" id="max-number-label">Größte Zahl:</label>
+                    <select id="max-number">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="difficulty" id="difficulty-label">Schwierigkeit:</label>
+                    <select id="difficulty">
+                        <option value="easy">Leicht</option>
+                        <option value="medium" selected>Mittel</option>
+                        <option value="hard">Schwer</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="start-btn">Spiel starten</button>
+        </div>
+        
+        <div class="game-area" id="game-area">
+            <div class="number-range">
+                <span id="min-range-display">1</span>
+                <span id="max-range-display">20</span>
+            </div>
+            
+            <div class="number-line" id="number-line">
+                <div class="range-highlight" id="range-highlight"></div>
+                <!-- Number markers will be added dynamically -->
+            </div>
+            
+            <div class="hint-container">
+                <div id="hint-text">Ich denke an eine Zahl. Kannst du sie erraten?</div>
+            </div>
+            
+            <div class="guess-input">
+                <label for="guess" id="guess-label">Deine Vermutung:</label>
+                <input type="number" id="guess" min="1" max="20">
+                <button id="submit-guess">Raten</button>
+            </div>
+            
+            <div class="message" id="message"></div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div id="attempts-label">Versuche:</div>
+                    <div class="stat-value" id="attempts">0</div>
+                </div>
+                <div class="stat-item">
+                    <div id="best-score-label">Beste Punktzahl:</div>
+                    <div class="stat-value" id="best-score">-</div>
+                </div>
+            </div>
+            
+            <div class="history" id="guess-history">
+                <div id="history-title">Verlauf:</div>
+                <!-- Guess history will be added here -->
+            </div>
+            
+            <div class="controls">
+                <button id="new-game-btn">Neues Spiel</button>
+                <button id="hint-btn">Hinweis</button>
+                <button id="back-btn">Zurück zu Einstellungen</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="back-to-menu">
+        <a href="index.html" id="back-link">Zurück zum Spielemenü</a>
+    </div>
+    
+    <footer>
+        <p id="footer-text">&copy; 2025 Onkel Jakob</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const languageSelect = document.getElementById('language-select');
+            const titleElement = document.getElementById('title');
+            const settingsPanel = document.getElementById('settings-panel');
+            const gameArea = document.getElementById('game-area');
+            const minNumberSelect = document.getElementById('min-number');
+            const maxNumberSelect = document.getElementById('max-number');
+            const difficultySelect = document.getElementById('difficulty');
+            const startBtn = document.getElementById('start-btn');
+            const newGameBtn = document.getElementById('new-game-btn');
+            const hintBtn = document.getElementById('hint-btn');
+            const backBtn = document.getElementById('back-btn');
+            const guessInput = document.getElementById('guess');
+            const submitGuessBtn = document.getElementById('submit-guess');
+            const messageElement = document.getElementById('message');
+            const attemptsElement = document.getElementById('attempts');
+            const bestScoreElement = document.getElementById('best-score');
+            const guessHistoryElement = document.getElementById('guess-history');
+            const hintTextElement = document.getElementById('hint-text');
+            const minRangeDisplay = document.getElementById('min-range-display');
+            const maxRangeDisplay = document.getElementById('max-range-display');
+            const numberLine = document.getElementById('number-line');
+            const rangeHighlight = document.getElementById('range-highlight');
+            const backLink = document.getElementById('back-link');
+            const footerText = document.getElementById('footer-text');
+            
+            // Game variables
+            let currentLanguage = 'de';
+            let minNumber = 1;
+            let maxNumber = 20;
+            let difficulty = 'medium';
+            let targetNumber;
+            let attempts = 0;
+            let hintsUsed = 0;
+            let gameActive = false;
+            let bestScores = {
+                easy: Infinity,
+                medium: Infinity,
+                hard: Infinity
+            };
+            let currentMin = 1;
+            let currentMax = 20;
+            let guessHistory = [];
+            
+            // Language translations
+            const translations = {
+                'en': {
+                    'title': 'Guess the Number',
+                    'min-number-label': 'Minimum Number:',
+                    'max-number-label': 'Maximum Number:',
+                    'difficulty-label': 'Difficulty:',
+                    'start-btn': 'Start Game',
+                    'new-game-btn': 'New Game',
+                    'hint-btn': 'Get Hint',
+                    'back-btn': 'Back to Settings',
+                    'guess-label': 'Your Guess:',
+                    'submit-guess': 'Guess',
+                    'attempts-label': 'Attempts:',
+                    'best-score-label': 'Best Score:',
+                    'history-title': 'History:',
+                    'initial-hint': 'I\'m thinking of a number. Can you guess it?',
+                    'hint-range': 'The number is between {0} and {1}.',
+                    'hint-even-odd': 'The number is {0}.',
+                    'hint-multiple': 'The number is {0} divisible by {1}.',
+                    'hint-sum-digits': 'The sum of the digits is {0}.',
+                    'hint-closer': 'You\'re getting closer!',
+                    'hint-colder': 'You\'re getting colder.',
+                    'hint-low': 'Too low! Try a higher number.',
+                    'hint-high': 'Too high! Try a lower number.',
+                    'hint-correct': 'Correct! You guessed the number {0} in {1} attempts.',
+                    'hint-used': 'Hint used: {0}',
+                    'even': 'even',
+                    'odd': 'odd',
+                    'is': 'is',
+                    'is-not': 'is not',
+                    'difficulty': {
+                        'easy': 'Easy',
+                        'medium': 'Medium',
+                        'hard': 'Hard'
+                    },
+                    'back-link': 'Back to Games Menu',
+                    'footer-text': '© 2025 Uncle Jakob',
+                    'history-too-low': 'Guess: {0} - Too low',
+                    'history-too-high': 'Guess: {0} - Too high',
+                    'history-correct': 'Guess: {0} - Correct!'
+                },
+                'de': {
+                    'title': 'Zahlenraten',
+                    'min-number-label': 'Kleinste Zahl:',
+                    'max-number-label': 'Größte Zahl:',
+                    'difficulty-label': 'Schwierigkeit:',
+                    'start-btn': 'Spiel starten',
+                    'new-game-btn': 'Neues Spiel',
+                    'hint-btn': 'Hinweis',
+                    'back-btn': 'Zurück zu Einstellungen',
+                    'guess-label': 'Deine Vermutung:',
+                    'submit-guess': 'Raten',
+                    'attempts-label': 'Versuche:',
+                    'best-score-label': 'Beste Punktzahl:',
+                    'history-title': 'Verlauf:',
+                    'initial-hint': 'Ich denke an eine Zahl. Kannst du sie erraten?',
+                    'hint-range': 'Die Zahl liegt zwischen {0} und {1}.',
+                    'hint-even-odd': 'Die Zahl ist {0}.',
+                    'hint-multiple': 'Die Zahl ist {0} durch {1} teilbar.',
+                    'hint-sum-digits': 'Die Summe der Ziffern ist {0}.',
+                    'hint-closer': 'Du kommst näher!',
+                    'hint-colder': 'Du entfernst dich.',
+                    'hint-low': 'Zu niedrig! Versuche eine höhere Zahl.',
+                    'hint-high': 'Zu hoch! Versuche eine niedrigere Zahl.',
+                    'hint-correct': 'Richtig! Du hast die Zahl {0} in {1} Versuchen erraten.',
+                    'hint-used': 'Hinweis verwendet: {0}',
+                    'even': 'gerade',
+                    'odd': 'ungerade',
+                    'is': 'ist',
+                    'is-not': 'ist nicht',
+                    'difficulty': {
+                        'easy': 'Leicht',
+                        'medium': 'Mittel',
+                        'hard': 'Schwer'
+                    },
+                    'back-link': 'Zurück zum Spielemenü',
+                    'footer-text': '© 2025 Onkel Jakob',
+                    'history-too-low': 'Versuch: {0} - Zu niedrig',
+                    'history-too-high': 'Versuch: {0} - Zu hoch',
+                    'history-correct': 'Versuch: {0} - Richtig!'
+                },
+                'fr': {
+                    'title': 'Devinez le Nombre',
+                    'min-number-label': 'Nombre Minimum:',
+                    'max-number-label': 'Nombre Maximum:',
+                    'difficulty-label': 'Difficulté:',
+                    'start-btn': 'Commencer le Jeu',
+                    'new-game-btn': 'Nouveau Jeu',
+                    'hint-btn': 'Indice',
+                    'back-btn': 'Retour aux Paramètres',
+                    'guess-label': 'Votre Estimation:',
+                    'submit-guess': 'Deviner',
+                    'attempts-label': 'Essais:',
+                    'best-score-label': 'Meilleur Score:',
+                    'history-title': 'Historique:',
+                    'initial-hint': 'Je pense à un nombre. Pouvez-vous le deviner?',
+                    'hint-range': 'Le nombre est entre {0} et {1}.',
+                    'hint-even-odd': 'Le nombre est {0}.',
+                    'hint-multiple': 'Le nombre est {0} divisible par {1}.',
+                    'hint-sum-digits': 'La somme des chiffres est {0}.',
+                    'hint-closer': 'Vous vous rapprochez!',
+                    'hint-colder': 'Vous vous éloignez.',
+                    'hint-low': 'Trop bas! Essayez un nombre plus élevé.',
+                    'hint-high': 'Trop haut! Essayez un nombre plus bas.',
+                    'hint-correct': 'Correct! Vous avez deviné le nombre {0} en {1} essais.',
+                    'hint-used': 'Indice utilisé: {0}',
+                    'even': 'pair',
+                    'odd': 'impair',
+                    'is': 'est',
+                    'is-not': 'n\'est pas',
+                    'difficulty': {
+                        'easy': 'Facile',
+                        'medium': 'Moyen',
+                        'hard': 'Difficile'
+                    },
+                    'back-link': 'Retour au Menu des Jeux',
+                    'footer-text': '© 2025 Oncle Jakob',
+                    'history-too-low': 'Essai: {0} - Trop bas',
+                    'history-too-high': 'Essai: {0} - Trop haut',
+                    'history-correct': 'Essai: {0} - Correct!'
+                },
+                'es': {
+                    'title': 'Adivina el Número',
+                    'min-number-label': 'Número Mínimo:',
+                    'max-number-label': 'Número Máximo:',
+                    'difficulty-label': 'Dificultad:',
+                    'start-btn': 'Iniciar Juego',
+                    'new-game-btn': 'Nuevo Juego',
+                    'hint-btn': 'Pista',
+                    'back-btn': 'Volver a Configuración',
+                    'guess-label': 'Tu Suposición:',
+                    'submit-guess': 'Adivinar',
+                    'attempts-label': 'Intentos:',
+                    'best-score-label': 'Mejor Puntuación:',
+                    'history-title': 'Historial:',
+                    'initial-hint': 'Estoy pensando en un número. ¿Puedes adivinarlo?',
+                    'hint-range': 'El número está entre {0} y {1}.',
+                    'hint-even-odd': 'El número es {0}.',
+                    'hint-multiple': 'El número es {0} divisible por {1}.',
+                    'hint-sum-digits': 'La suma de los dígitos es {0}.',
+                    'hint-closer': '¡Te estás acercando!',
+                    'hint-colder': 'Te estás alejando.',
+                    'hint-low': '¡Demasiado bajo! Intenta un número más alto.',
+                    'hint-high': '¡Demasiado alto! Intenta un número más bajo.',
+                    'hint-correct': '¡Correcto! Has adivinado el número {0} en {1} intentos.',
+                    'hint-used': 'Pista utilizada: {0}',
+                    'even': 'par',
+                    'odd': 'impar',
+                    'is': 'es',
+                    'is-not': 'no es',
+                    'difficulty': {
+                        'easy': 'Fácil',
+                        'medium': 'Medio',
+                        'hard': 'Difícil'
+                    },
+                    'back-link': 'Volver al Menú de Juegos',
+                    'footer-text': '© 2025 Tío Jakob',
+                    'history-too-low': 'Intento: {0} - Demasiado bajo',
+                    'history-too-high': 'Intento: {0} - Demasiado alto',
+                    'history-correct': 'Intento: {0} - ¡Correcto!'
+                },
+                'pl': {
+                    'title': 'Zgadnij Liczbę',
+                    'min-number-label': 'Minimalna Liczba:',
+                    'max-number-label': 'Maksymalna Liczba:',
+                    'difficulty-label': 'Poziom Trudności:',
+                    'start-btn': 'Rozpocznij Grę',
+                    'new-game-btn': 'Nowa Gra',
+                    'hint-btn': 'Podpowiedź',
+                    'back-btn': 'Powrót do Ustawień',
+                    'guess-label': 'Twoja Odpowiedź:',
+                    'submit-guess': 'Zgadnij',
+                    'attempts-label': 'Próby:',
+                    'best-score-label': 'Najlepszy Wynik:',
+                    'history-title': 'Historia:',
+                    'initial-hint': 'Myślę o pewnej liczbie. Czy potrafisz ją odgadnąć?',
+                    'hint-range': 'Liczba jest pomiędzy {0} a {1}.',
+                    'hint-even-odd': 'Liczba jest {0}.',
+                    'hint-multiple': 'Liczba jest {0} podzielna przez {1}.',
+                    'hint-sum-digits': 'Suma cyfr wynosi {0}.',
+                    'hint-closer': 'Zbliżasz się!',
+                    'hint-colder': 'Oddalasz się.',
+                    'hint-low': 'Za nisko! Spróbuj wyższej liczby.',
+                    'hint-high': 'Za wysoko! Spróbuj niższej liczby.',
+                    'hint-correct': 'Poprawnie! Odgadłeś liczbę {0} w {1} próbach.',
+                    'hint-used': 'Użyta podpowiedź: {0}',
+                    'even': 'parzysta',
+                    'odd': 'nieparzysta',
+                    'is': 'jest',
+                    'is-not': 'nie jest',
+                    'difficulty': {
+                        'easy': 'Łatwy',
+                        'medium': 'Średni',
+                        'hard': 'Trudny'
+                    },
+                    'back-link': 'Powrót do Menu Gier',
+                    'footer-text': '© 2025 Wujek Jakob',
+                    'history-too-low': 'Próba: {0} - Za nisko',
+                    'history-too-high': 'Próba: {0} - Za wysoko',
+                    'history-correct': 'Próba: {0} - Poprawnie!'
+                }
+            };
+            
+            // Detect browser language
+            function detectLanguage() {
+                // Check URL parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const langParam = urlParams.get('lang');
+                if (langParam && translations[langParam]) {
+                    return langParam;
+                }
+                
+                // Check localStorage next
+                const storedLang = localStorage.getItem('preferredLanguage');
+                if (storedLang && translations[storedLang]) {
+                    return storedLang;
+                }
+                
+                // Finally, check browser language
+                const browserLang = navigator.language || navigator.userLanguage;
+                const shortLang = browserLang.split('-')[0]; // Get primary language code
+                
+                // Check if we support this language
+                if (translations[shortLang]) {
+                    return shortLang;
+                }
+                
+                // Default to German if language not supported
+                return 'de';
+            }
+            
+            // Set initial language based on detection
+            currentLanguage = detectLanguage();
+            languageSelect.value = currentLanguage;
+            document.documentElement.lang = currentLanguage;
+            
+            // Apply initial language
+            updateLanguage();
+            
+            // Set up event listeners
+            startBtn.addEventListener('click', startGame);
+            newGameBtn.addEventListener('click', startNewGame);
+            backBtn.addEventListener('click', backToSettings);
+            submitGuessBtn.addEventListener('click', submitGuess);
+            hintBtn.addEventListener('click', provideHint);
+            languageSelect.addEventListener('change', changeLanguage);
+            guessInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitGuess();
+                }
+            });
+            
+            // Update back link to include language parameter
+            backLink.href = `index.html?lang=${currentLanguage}`;
+            
+            // Load best scores from localStorage
+            loadBestScores();
+            
+            function changeLanguage() {
+                currentLanguage = languageSelect.value;
+                updateLanguage();
+                
+                // Store the language preference in localStorage
+                localStorage.setItem('preferredLanguage', currentLanguage);
+                
+                // Update the URL parameter without reloading the page
+                const url = new URL(window.location);
+                url.searchParams.set('lang', currentLanguage);
+                window.history.replaceState({}, '', url);
+                
+                // Update back link
+                backLink.href = `index.html?lang=${currentLanguage}`;
+                
+                // Update game text if game is active
+                if (gameActive) {
+                    updateGameText();
+                }
+            }
+            
+            function updateLanguage() {
+                const lang = translations[currentLanguage];
+                
+                // Update static UI elements
+                titleElement.textContent = lang['title'];
+                document.title = lang['title'];
+                document.getElementById('min-number-label').textContent = lang['min-number-label'];
+                document.getElementById('max-number-label').textContent = lang['max-number-label'];
+                document.getElementById('difficulty-label').textContent = lang['difficulty-label'];
+                startBtn.textContent = lang['start-btn'];
+                newGameBtn.textContent = lang['new-game-btn'];
+                hintBtn.textContent = lang['hint-btn'];
+                backBtn.textContent = lang['back-btn'];
+                document.getElementById('guess-label').textContent = lang['guess-label'];
+                submitGuessBtn.textContent = lang['submit-guess'];
+                document.getElementById('attempts-label').textContent = lang['attempts-label'];
+                document.getElementById('best-score-label').textContent = lang['best-score-label'];
+                document.getElementById('history-title').textContent = lang['history-title'];
+                backLink.textContent = lang['back-link'];
+                footerText.textContent = lang['footer-text'];
+                
+                // Update document language
+                document.documentElement.lang = currentLanguage;
+                
+                // Update difficulty options
+                updateDifficultyOptions();
+                
+                // Update best score display
+                updateBestScoreDisplay();
+            }
+            
+            function updateDifficultyOptions() {
+                const lang = translations[currentLanguage]['difficulty'];
+                const currentValue = difficultySelect.value;
+                
+                // Clear and rebuild options
+                difficultySelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'easy': lang['easy'],
+                    'medium': lang['medium'],
+                    'hard': lang['hard']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    difficultySelect.appendChild(option);
+                }
+                
+                // Restore selection
+                difficultySelect.value = currentValue;
+            }
+            
+            function updateGameText() {
+                const lang = translations[currentLanguage];
+                
+                // Update hint text
+                if (gameActive && !guessHistory.length) {
+                    hintTextElement.textContent = lang['initial-hint'];
+                }
+                
+                // Update range display
+                minRangeDisplay.textContent = currentMin;
+                maxRangeDisplay.textContent = currentMax;
+                
+                // Update history items
+                updateGuessHistoryDisplay();
+            }
+            
+            function startGame() {
+                // Get selected options
+                minNumber = parseInt(minNumberSelect.value);
+                maxNumber = parseInt(maxNumberSelect.value);
+                difficulty = difficultySelect.value;
+                
+                // Validate range
+                if (minNumber >= maxNumber) {
+                    alert('Maximum number must be greater than minimum number!');
+                    return;
+                }
+                
+                // Reset game state
+                attempts = 0;
+                hintsUsed = 0;
+                attemptsElement.textContent = '0';
+                messageElement.textContent = '';
+                messageElement.className = 'message';
+                guessHistoryElement.innerHTML = `<div id="history-title">${translations[currentLanguage]['history-title']}</div>`;
+                guessHistory = [];
+                
+                // Generate target number
+                targetNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+                
+                // Set current range
+                currentMin = minNumber;
+                currentMax = maxNumber;
+                
+                // Update UI
+                minRangeDisplay.textContent = currentMin;
+                maxRangeDisplay.textContent = currentMax;
+                guessInput.min = minNumber;
+                guessInput.max = maxNumber;
+                guessInput.value = '';
+                guessInput.placeholder = `${minNumber}-${maxNumber}`;
+                
+                // Show game area, hide settings
+                settingsPanel.style.display = 'none';
+                gameArea.style.display = 'block';
+                
+                // Set game as active
+                gameActive = true;
+                
+                // Update hint text
+                hintTextElement.textContent = translations[currentLanguage]['initial-hint'];
+                
+                // Generate number line
+                generateNumberLine();
+                
+                // Update range highlight
+                updateRangeHighlight();
+                
+                // Focus on input
+                guessInput.focus();
+            }
+            
+            function generateNumberLine() {
+                // Clear existing markers
+                const markers = numberLine.querySelectorAll('.number-marker');
+                markers.forEach(marker => marker.remove());
+                
+                // Determine step size based on range
+                const range = maxNumber - minNumber;
+                let step = 1;
+                
+                if (range > 50) {
+                    step = 10;
+                } else if (range > 20) {
+                    step = 5;
+                } else if (range > 10) {
+                    step = 2;
+                }
+                
+                // Add markers
+                for (let i = minNumber; i <= maxNumber; i += step) {
+                    const marker = document.createElement('div');
+                    marker.className = 'number-marker';
+                    marker.textContent = i;
+                    
+                    // Calculate position (percentage)
+                    const position = ((i - minNumber) / (maxNumber - minNumber)) * 100;
+                    marker.style.left = `${position}%`;
+                    
+                    numberLine.appendChild(marker);
+                }
+            }
+            
+            function updateRangeHighlight() {
+                // Calculate positions as percentages
+                const minPos = ((currentMin - minNumber) / (maxNumber - minNumber)) * 100;
+                const maxPos = ((currentMax - minNumber) / (maxNumber - minNumber)) * 100;
+                
+                // Update highlight position and width
+                rangeHighlight.style.left = `${minPos}%`;
+                rangeHighlight.style.width = `${maxPos - minPos}%`;
+            }
+            
+            function submitGuess() {
+                if (!gameActive) return;
+                
+                const guess = parseInt(guessInput.value);
+                
+                // Validate guess
+                if (isNaN(guess) || guess < minNumber || guess > maxNumber) {
+                    messageElement.textContent = `${translations[currentLanguage]['hint-range'].replace('{0}', minNumber).replace('{1}', maxNumber)}`;
+                    messageElement.className = 'message wrong';
+                    return;
+                }
+                
+                // Increment attempts
+                attempts++;
+                attemptsElement.textContent = attempts;
+                
+                // Check guess
+                if (guess === targetNumber) {
+                    // Correct guess
+                    const successMessage = translations[currentLanguage]['hint-correct']
+                        .replace('{0}', targetNumber)
+                        .replace('{1}', attempts);
+                    
+                    hintTextElement.textContent = successMessage;
+                    messageElement.textContent = successMessage;
+                    messageElement.className = 'message correct';
+                    
+                    // Add to history
+                    addToHistory(guess, 'correct');
+                    
+                    // Update best score
+                    updateBestScore();
+                    
+                    // Game over
+                    gameActive = false;
+                    submitGuessBtn.disabled = true;
+                    hintBtn.disabled = true;
+                    
+                } else if (guess < targetNumber) {
+                    // Too low
+                    hintTextElement.textContent = translations[currentLanguage]['hint-low'];
+                    messageElement.textContent = translations[currentLanguage]['hint-low'];
+                    messageElement.className = 'message wrong';
+                    
+                    // Update range
+                    if (guess > currentMin) {
+                        currentMin = guess;
+                        minRangeDisplay.textContent = currentMin;
+                        updateRangeHighlight();
+                    }
+                    
+                    // Add to history
+                    addToHistory(guess, 'low');
+                    
+                } else {
+                    // Too high
+                    hintTextElement.textContent = translations[currentLanguage]['hint-high'];
+                    messageElement.textContent = translations[currentLanguage]['hint-high'];
+                    messageElement.className = 'message wrong';
+                    
+                    // Update range
+                    if (guess < currentMax) {
+                        currentMax = guess;
+                        maxRangeDisplay.textContent = currentMax;
+                        updateRangeHighlight();
+                    }
+                    
+                    // Add to history
+                    addToHistory(guess, 'high');
+                }
+                
+                // Clear input and focus
+                guessInput.value = '';
+                guessInput.focus();
+            }
+            
+        function addToHistory(guess, result) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            
+            let message;
+            if (result === 'correct') {
+                historyItem.classList.add('correct-guess');
+                message = translations[currentLanguage]['history-correct'].replace('{0}', guess);
+            } else if (result === 'low') {
+                historyItem.classList.add('too-low');
+                message = translations[currentLanguage]['history-too-low'].replace('{0}', guess);
+            } else if (result === 'high') {
+                historyItem.classList.add('too-high');
+                message = translations[currentLanguage]['history-too-high'].replace('{0}', guess);
+            }
+            
+            historyItem.textContent = message;
+            
+            // Add to history array
+            guessHistory.push({
+                guess: guess,
+                result: result
+            });
+            
+            // Add to DOM
+            guessHistoryElement.appendChild(historyItem);
+            
+            // Scroll to bottom
+            guessHistoryElement.scrollTop = guessHistoryElement.scrollHeight;
+        }
+
+        function updateGuessHistoryDisplay() {
+            // Clear history display except title
+            while (guessHistoryElement.childNodes.length > 1) {
+                guessHistoryElement.removeChild(guessHistoryElement.lastChild);
+            }
+            
+            // Update history title
+            document.getElementById('history-title').textContent = translations[currentLanguage]['history-title'];
+            
+            // Re-add all history items with updated language
+            guessHistory.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                let message;
+                if (item.result === 'correct') {
+                    historyItem.classList.add('correct-guess');
+                    message = translations[currentLanguage]['history-correct'].replace('{0}', item.guess);
+                } else if (item.result === 'low') {
+                    historyItem.classList.add('too-low');
+                    message = translations[currentLanguage]['history-too-low'].replace('{0}', item.guess);
+                } else if (item.result === 'high') {
+                    historyItem.classList.add('too-high');
+                    message = translations[currentLanguage]['history-too-high'].replace('{0}', item.guess);
+                }
+                
+                historyItem.textContent = message;
+                guessHistoryElement.appendChild(historyItem);
+            });
+        }
+
+        function provideHint() {
+            if (!gameActive) return;
+            
+            hintsUsed++;
+            const lang = translations[currentLanguage];
+            let hint = '';
+            
+            // Different hint types based on difficulty
+            const hintTypes = [];
+            
+            // Range hint (always available)
+            hintTypes.push(() => {
+                const rangeSize = currentMax - currentMin;
+                const quarter = Math.floor(rangeSize / 4);
+                
+                if (quarter > 0) {
+                    // Narrow down the range
+                    const newMin = Math.max(currentMin, targetNumber - quarter);
+                    const newMax = Math.min(currentMax, targetNumber + quarter);
+                    
+                    currentMin = newMin;
+                    currentMax = newMax;
+                    minRangeDisplay.textContent = currentMin;
+                    maxRangeDisplay.textContent = currentMax;
+                    updateRangeHighlight();
+                    
+                    return lang['hint-range'].replace('{0}', newMin).replace('{1}', newMax);
+                } else {
+                    return lang['hint-range'].replace('{0}', currentMin).replace('{1}', currentMax);
+                }
+            });
+            
+            // Even/odd hint
+            hintTypes.push(() => {
+                const isEven = targetNumber % 2 === 0;
+                return lang['hint-even-odd'].replace('{0}', isEven ? lang['even'] : lang['odd']);
+            });
+            
+            // Divisibility hint (for medium and easy)
+            if (difficulty !== 'hard') {
+                hintTypes.push(() => {
+                    // Find a divisor
+                    let divisors = [];
+                    for (let i = 2; i <= 10; i++) {
+                        if (targetNumber % i === 0) {
+                            divisors.push(i);
+                        }
+                    }
+                    
+                    if (divisors.length > 0) {
+                        const divisor = divisors[Math.floor(Math.random() * divisors.length)];
+                        return lang['hint-multiple'].replace('{0}', lang['is']).replace('{1}', divisor);
+                    } else {
+                        // If no divisors found, mention a non-divisor
+                        const nonDivisor = Math.floor(Math.random() * 9) + 2;
+                        return lang['hint-multiple'].replace('{0}', lang['is-not']).replace('{1}', nonDivisor);
+                    }
+                });
+            }
+            
+            // Sum of digits hint (for easy only)
+            if (difficulty === 'easy') {
+                hintTypes.push(() => {
+                    const sumOfDigits = targetNumber.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+                    return lang['hint-sum-digits'].replace('{0}', sumOfDigits);
+                });
+            }
+            
+            // Select a random hint type
+            const hintFunction = hintTypes[Math.floor(Math.random() * hintTypes.length)];
+            hint = hintFunction();
+            
+            // Display the hint
+            hintTextElement.textContent = hint;
+            messageElement.textContent = lang['hint-used'].replace('{0}', hint);
+            messageElement.className = 'message';
+            
+            // Disable hint button after 3 hints
+            if (hintsUsed >= 3) {
+                hintBtn.disabled = true;
+            }
+        }
+
+        function updateBestScore() {
+            if (bestScores[difficulty] === Infinity || attempts < bestScores[difficulty]) {
+                bestScores[difficulty] = attempts;
+                saveBestScores();
+            }
+            
+            updateBestScoreDisplay();
+        }
+
+        function updateBestScoreDisplay() {
+            const score = bestScores[difficulty];
+            bestScoreElement.textContent = score === Infinity ? '-' : score;
+        }
+
+        function saveBestScores() {
+            localStorage.setItem('guessNumberBestScores', JSON.stringify(bestScores));
+        }
+
+        function loadBestScores() {
+            const savedScores = localStorage.getItem('guessNumberBestScores');
+            if (savedScores) {
+                try {
+                    const parsedScores = JSON.parse(savedScores);
+                    // Ensure all difficulty levels are present
+                    bestScores = {
+                        easy: parsedScores.easy || Infinity,
+                        medium: parsedScores.medium || Infinity,
+                        hard: parsedScores.hard || Infinity
+                    };
+                } catch (e) {
+                    console.error('Error loading best scores:', e);
+                }
+            }
+            
+            updateBestScoreDisplay();
+        }
+
+        function startNewGame() {
+            // Reset game state but keep settings
+            attempts = 0;
+            hintsUsed = 0;
+            attemptsElement.textContent = '0';
+            messageElement.textContent = '';
+            messageElement.className = 'message';
+            guessHistoryElement.innerHTML = `<div id="history-title">${translations[currentLanguage]['history-title']}</div>`;
+            guessHistory = [];
+            
+            // Generate new target number
+            targetNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+            
+            // Reset current range
+            currentMin = minNumber;
+            currentMax = maxNumber;
+            
+            // Update UI
+            minRangeDisplay.textContent = currentMin;
+            maxRangeDisplay.textContent = currentMax;
+            guessInput.value = '';
+            
+            // Re-enable buttons
+            submitGuessBtn.disabled = false;
+            hintBtn.disabled = false;
+            
+            // Set game as active
+            gameActive = true;
+            
+            // Update hint text
+            hintTextElement.textContent = translations[currentLanguage]['initial-hint'];
+            
+            // Update range highlight
+            updateRangeHighlight();
+            
+            // Focus on input
+            guessInput.focus();
+        }
+
+        function backToSettings() {
+            // Show settings, hide game area
+            settingsPanel.style.display = 'block';
+            gameArea.style.display = 'none';
+            
+            // Set game as inactive
+            gameActive = false;
+        }
+
+        // Format string with replacements
+        function formatString(str, ...args) {
+            return str.replace(/{(\d+)}/g, function(match, number) {
+                return typeof args[number] !== 'undefined' ? args[number] : match;
+            });
+        }
+
+// Initialize the game
+updateLanguage();
+});
+</script>
+</body>
+</html>
