@@ -558,9 +558,24 @@
                 messageElement.textContent = '';
                 messageElement.className = 'message';
                 
+                // Enable number buttons if they were disabled
+                document.querySelectorAll('.number-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+                
+                // Enable hint button if it was disabled
+                hintBtn.disabled = false;
+                
+                // Reset selected cell
+                if (selectedCell) {
+                    selectedCell.classList.remove('selected');
+                    selectedCell = null;
+                }
+                
                 // Start the timer
                 startTimer();
             }
+
             
             function generatePuzzle() {
                 // Generate a valid 4x4 Sudoku solution
