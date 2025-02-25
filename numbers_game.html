@@ -20,12 +20,12 @@
             font-size: 28px;
             margin-bottom: 20px;
         }
-
+        
         footer {
-          text-align: center;
-          font-family: Consolas, monospace;
-          font-size: 12px;
-          margin-top: 20px;
+            text-align: center;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            margin-top: 20px;
         }
         
         .game-container {
@@ -371,7 +371,8 @@
                     'no-scores': 'No high scores yet. Start playing!',
                     'or-text': 'OR',
                     'max': 'Max',
-                    'mode': 'Mode'
+                    'mode': 'Mode',
+                    'footer-text': '© 2025 Uncle Jakob'
                 },
                 'de': {
                     'title': 'Zahlenvergleichsspiel',
@@ -395,7 +396,8 @@
                     'no-scores': 'Noch keine Highscores. Fang an zu spielen!',
                     'or-text': 'ODER',
                     'max': 'Max',
-                    'mode': 'Modus'
+                    'mode': 'Modus',
+                    'footer-text': '© 2025 Onkel Jakob'
                 },
                 'fr': {
                     'title': 'Jeu de Comparaison de Nombres',
@@ -419,7 +421,8 @@
                     'no-scores': 'Pas encore de meilleurs scores. Commencez à jouer!',
                     'or-text': 'OU',
                     'max': 'Max',
-                    'mode': 'Mode'
+                    'mode': 'Mode',
+                    'footer-text': '© 2025 Oncle Jakob'
                 },
                 'es': {
                     'title': 'Juego de Comparación de Números',
@@ -443,7 +446,8 @@
                     'no-scores': '¡Aún no hay puntuaciones máximas. ¡Empieza a jugar!',
                     'or-text': 'O',
                     'max': 'Máx',
-                    'mode': 'Modo'
+                    'mode': 'Modo',
+                    'footer-text': '© 2025 Tio Jakob'
                 },
                 'pl': {
                     'title': 'Gra Porównywania Liczb',
@@ -467,7 +471,8 @@
                     'no-scores': 'Brak najlepszych wyników. Zacznij grać!',
                     'or-text': 'LUB',
                     'max': 'Maks',
-                    'mode': 'Tryb'
+                    'mode': 'Tryb',
+                    'footer-text': '© 2025 Wujek Jakob'
                 }
             };
             
@@ -551,7 +556,8 @@
                 document.getElementById('timer-label').textContent = lang['timer-label'];
                 document.getElementById('high-scores-title').textContent = lang['high-scores-title'];
                 document.getElementById('or-text').textContent = lang['or-text'];
-                
+                document.getElementById('footer-text').textContent = lang['footer-text'];
+
                 // Update document language
                 document.documentElement.lang = currentLanguage;
                 
@@ -888,9 +894,7 @@
         });
     </script>
 </body>
-    
 <footer>
-  <p>&copy; 2025 Onkel Jakob</p>
-</footer>
-    
+    <p id="footer-text">&copy; 2025 Onkel Jakob</p>
+  </footer>
 </html>

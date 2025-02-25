@@ -18,6 +18,13 @@
             margin-bottom: 30px;
         }
         
+        footer {
+            text-align: center;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        
         .games-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -108,12 +115,6 @@
                 grid-template-columns: 1fr;
             }
         }
-        footer {
-      text-align: center;
-      font-family: Consolas, monospace;
-      font-size: 12px;
-      margin-top: 20px;
-    }
     </style>
 </head>
 <body>
@@ -188,16 +189,34 @@
         </a>
 
         
-        <div class="game-button coming-soon">
+        <!-- Sudoku Game -->
+        <a href="sudoku.html" class="game-button" id="sudoku-game-link">
             <div class="game-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 8v4" />
-                    <path d="M12 16h.01" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Background square -->
+                    <rect x="2" y="2" width="20" height="20" rx="2" fill="#E8EAF6" stroke="#3F51B5" stroke-width="1" />
+                    
+                    <!-- Grid lines -->
+                    <line x1="8" y1="2" x2="8" y2="22" stroke="#3F51B5" stroke-width="1.5" />
+                    <line x1="16" y1="2" x2="16" y2="22" stroke="#3F51B5" stroke-width="1.5" />
+                    <line x1="2" y1="8" x2="22" y2="8" stroke="#3F51B5" stroke-width="1.5" />
+                    <line x1="2" y1="16" x2="22" y2="16" stroke="#3F51B5" stroke-width="1.5" />
+                    
+                    <!-- Numbers -->
+                    <text x="5" y="6" font-family="Arial" font-size="4" fill="#3F51B5" text-anchor="middle">4</text>
+                    <text x="13" y="6" font-family="Arial" font-size="4" fill="#3F51B5" text-anchor="middle">2</text>
+                    <text x="21" y="6" font-family="Arial" font-size="4" fill="#3F51B5" text-anchor="middle">1</text>
+                    
+                    <text x="5" y="14" font-family="Arial" font-size="4" fill="#3F51B5" text-anchor="middle">1</text>
+                    <text x="13" y="14" font-family="Arial" font-size="4" fill="#3F51B5" text-anchor="middle">3</text>
+                    
+                    <text x="5" y="21" font-family="Arial" font-size="4" fill="#3F51B5" text-anchor="middle">2</text>
+                    <text x="21" y="21" font-family="Arial" font-size="4" fill="#3F51B5" text-anchor="middle">4</text>
                 </svg>
             </div>
-            <div class="game-title" id="coming-soon-2">Demnächst verfügbar</div>
-        </div>
+            <div class="game-title" id="sudoku-game-title">Sudoku 4x4</div>
+        </a>
+
         
         <div class="game-button coming-soon">
             <div class="game-icon">
@@ -266,7 +285,6 @@
             const balloonGameLink = document.getElementById('balloon-game-link');
             const sortingGameLink = document.getElementById('sorting-game-link');
             const comingSoonElements = [];
-
             
             for (let i = 1; i <= 7; i++) {
                 comingSoonElements.push(document.getElementById(`coming-soon-${i}`));
@@ -279,35 +297,41 @@
                     'numbers-game-title': 'Number Comparison Game',
                     'balloon-game-title': 'Math Balloon Game',
                     'sorting-game-title': 'Number Sorting Game',
-                    'coming-soon': 'Coming Soon'
+                    'coming-soon': 'Coming Soon',
+                    'footer-text': '© 2025 Uncle Jakob'
+                
                 },
                 'de': {
                     'page-title': 'Spielesammlung',
                     'numbers-game-title': 'Zahlenvergleichsspiel',
                     'balloon-game-title': 'Mathe-Luftballonspiel',
                     'sorting-game-title': 'Zahlen-Sortierspiel',
-                    'coming-soon': 'Demnächst verfügbar'
+                    'coming-soon': 'Demnächst verfügbar',
+                    'footer-text': '© 2025 Onkel Jakob'
                 },
                 'fr': {
                     'page-title': 'Collection de Jeux',
                     'numbers-game-title': 'Jeu de Comparaison de Nombres',
                     'balloon-game-title': 'Jeu de Ballons Mathématiques',
                     'sorting-game-title': 'Jeu de Tri de Nombres',
-                    'coming-soon': 'Bientôt Disponible'
+                    'coming-soon': 'Bientôt Disponible',
+                    'footer-text': '© 2025 Oncle Jakob'
                 },
                 'es': {
                     'page-title': 'Colección de Juegos',
                     'numbers-game-title': 'Juego de Comparación de Números',
                     'balloon-game-title': 'Juego de Globos Matemáticos',
                     'sorting-game-title': 'Juego de Ordenar Números',
-                    'coming-soon': 'Próximamente'
+                    'coming-soon': 'Próximamente',
+                    'footer-text': '© 2025 Tio Jakob'
                 },
                 'pl': {
                     'page-title': 'Kolekcja Gier',
                     'numbers-game-title': 'Gra Porównywania Liczb',
                     'balloon-game-title': 'Gra Matematyczne Balony',
                     'sorting-game-title': 'Gra Sortowanie Liczb',
-                    'coming-soon': 'Wkrótce Dostępne'
+                    'coming-soon': 'Wkrótce Dostępne',
+                    'footer-text': '© 2025 Wujek Jakob'
                 }
             };
 
@@ -373,7 +397,8 @@
                 balloonGameTitle.textContent = lang['balloon-game-title'];
                 sortingGameTitle.textContent = lang['sorting-game-title'];
                 document.title = lang['page-title'];
-                
+                document.getElementById('footer-text').textContent = lang['footer-text'];
+
                 // Update all "coming soon" elements
                 comingSoonElements.forEach(element => {
                     if (element) {
@@ -392,9 +417,7 @@
     </script>
     
 </body>
-    
 <footer>
-  <p>&copy; 2025 Onkel Jakob</p>
-</footer>
-    
+    <p id="footer-text">&copy; 2025 Onkel Jakob</p>
+  </footer>
 </html>

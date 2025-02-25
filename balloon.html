@@ -1,4 +1,3 @@
-<!-- MATH BALOON GAME -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -18,6 +17,13 @@
         h1 {
             color: #333;
             margin: 20px 0;
+        }
+        
+        footer {
+            text-align: center;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            margin-top: 20px;
         }
         
         .game-container {
@@ -287,13 +293,6 @@
                 margin-bottom: 5px;
             }
         }
-
-        footer {
-      text-align: center;
-      font-family: Consolas, monospace;
-      font-size: 12px;
-      margin-top: 20px;
-    }
     </style>
 </head>
 <body>
@@ -442,6 +441,7 @@
                     'th-operation': 'Operation',
                     'th-difficulty': 'Difficulty',
                     'th-score': 'Score',
+                    'footer-text': '© 2025 Uncle Jakob',
                     'operations': {
                         'addition': 'Addition (+)',
                         'subtraction': 'Subtraction (-)',
@@ -453,7 +453,9 @@
                         'easy': 'Easy',
                         'medium': 'Medium',
                         'hard': 'Hard'
-                    }
+                    },
+                    'footer-text': '© 2025 Uncle Jakob'
+                
                 },
                 'de': {
                     'title': 'Mathe-Luftballonspiel',
@@ -473,6 +475,7 @@
                     'th-operation': 'Rechenart',
                     'th-difficulty': 'Schwierigkeit',
                     'th-score': 'Punktzahl',
+                    'footer-text': '© 2025 Onkel Jakob',
                     'operations': {
                         'addition': 'Addition (+)',
                         'subtraction': 'Subtraktion (-)',
@@ -504,6 +507,7 @@
                     'th-operation': 'Opération',
                     'th-difficulty': 'Difficulté',
                     'th-score': 'Score',
+                    'footer-text': '© 2025 Oncle Jakob',
                     'operations': {
                         'addition': 'Addition (+)',
                         'subtraction': 'Soustraction (-)',
@@ -535,6 +539,7 @@
                     'th-operation': 'Operación',
                     'th-difficulty': 'Dificultad',
                     'th-score': 'Puntuación',
+                    'footer-text': '© 2025 Tio Jakob',
                     'operations': {
                         'addition': 'Suma (+)',
                         'subtraction': 'Resta (-)',
@@ -546,8 +551,7 @@
                         'easy': 'Fácil',
                         'medium': 'Medio',
                         'hard': 'Difícil'
-                    }
-                },
+                    }  },
                 'pl': {
                     'title': 'Gra Matematyczne Balony',
                     'settings-title': 'Ustawienia Gry',
@@ -566,6 +570,7 @@
                     'th-operation': 'Działanie',
                     'th-difficulty': 'Poziom trudności',
                     'th-score': 'Wynik',
+                    'footer-text': '© 2025 Wujek Jakob',
                     'operations': {
                         'addition': 'Dodawanie (+)',
                         'subtraction': 'Odejmowanie (-)',
@@ -681,7 +686,8 @@
                 document.getElementById('th-operation').textContent = lang['th-operation'];
                 document.getElementById('th-difficulty').textContent = lang['th-difficulty'];
                 document.getElementById('th-score').textContent = lang['th-score'];
-                
+                document.getElementById('footer-text').textContent = lang['footer-text'];
+
                 // Update document title
                 document.title = lang['title'];
                 
@@ -1113,9 +1119,7 @@
         });
     </script>
 </body>
-    
 <footer>
-  <p>&copy; 2025 Onkel Jakob</p>
-</footer>
-    
+    <p id="footer-text">&copy; 2025 Onkel Jakob</p>
+  </footer>
 </html>
