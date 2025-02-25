@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathe-Luftballonspiel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin: 20px 0;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            background-color: #87CEEB;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .balloon {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 80px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+        }
+        
+        .balloon:before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 15px;
+            background-color: inherit;
+            bottom: -8px;
+            left: 25px;
+            border-radius: 40%;
+        }
+        
+        .balloon:after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 40px;
+            background-color: #666;
+            bottom: -48px;
+            left: 29px;
+        }
+        
+        .balloon:hover {
+            transform: scale(1.05);
+        }
+        
+        .balloon.popping {
+            animation: pop 0.3s forwards;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(0.1); opacity: 0; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(0); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .controls {
+            margin: 20px auto;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .score-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .score, .level, .lives {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        
+        .answer-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .answer-input {
+            width: 80px;
+            padding: 8px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        
+        .submit-btn {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            display: none;
+        }
+        
+        .restart-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .restart-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .settings {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .settings label {
+            margin-right: 10px;
+        }
+        
+        select, button {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0b7dda;
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .back-to-menu {
+            margin: 20px auto;
+            text-align: center;
+        }
+        
+        .back-to-menu a {
+            color: #2196F3;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .back-to-menu a:hover {
+            text-decoration: underline;
+        }
+        
+        .high-scores {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .high-scores-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .scores-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .scores-table th, .scores-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .scores-table th {
+            background-color: #f2f2f2;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .score-container {
+                align-items: center;
+                margin-bottom: 15px;
+            }
+            
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .settings-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .settings label {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <select id="language-select">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="pl">Polski</option>
+        </select>
+    </div>
+    
+    <h1 id="title">Mathe-Luftballonspiel</h1>
+    
+    <div class="settings" id="settings-panel">
+        <div class="settings-title" id="settings-title">Spieleinstellungen</div>
+        <div class="settings-row">
+            <div>
+                <label for="operation-select" id="operation-label">Rechenart:</label>
+                <select id="operation-select">
+                    <option value="addition">Addition (+)</option>
+                    <option value="subtraction">Subtraktion (-)</option>
+                    <option value="multiplication">Multiplikation (×)</option>
+                    <option value="division">Division (÷)</option>
+                    <option value="mixed">Gemischt</option>
+                </select>
+            </div>
+            <div>
+                <label for="difficulty-select" id="difficulty-label">Schwierigkeit:</label>
+                <select id="difficulty-select">
+                    <option value="easy">Leicht</option>
+                    <option value="medium">Mittel</option>
+                    <option value="hard">Schwer</option>
+                </select>
+            </div>
+            <button id="start-btn">Spiel starten</button>
+        </div>
+    </div>
+    
+    <div class="game-container" id="game-container" style="display: none;">
+        <!-- Balloons will be created dynamically -->
+        
+        <div class="game-over" id="game-over">
+            <div id="game-over-text">Spiel vorbei!</div>
+            <div id="final-score-text">Deine Punktzahl: <span id="final-score">0</span></div>
+            <button class="restart-btn" id="restart-btn">Neu starten</button>
+        </div>
+    </div>
+    
+    <div class="controls" id="controls" style="display: none;">
+        <div class="score-container">
+            <div class="score" id="score-text">Punktzahl: <span id="score">0</span></div>
+            <div class="level" id="level-text">Level: <span id="level">1</span></div>
+            <div class="lives" id="lives-text">Leben: <span id="lives">3</span></div>
+        </div>
+        
+        <div class="answer-container">
+            <input type="number" class="answer-input" id="answer-input" placeholder="?" />
+            <button class="submit-btn" id="submit-btn">OK</button>
+        </div>
+    </div>
+    
+    <div class="high-scores" id="high-scores-panel">
+        <div class="high-scores-title" id="high-scores-title">Bestenliste</div>
+        <table class="scores-table" id="scores-table">
+            <thead>
+                <tr>
+                    <th id="th-operation">Rechenart</th>
+                    <th id="th-difficulty">Schwierigkeit</th>
+                    <th id="th-score">Punktzahl</th>
+                </tr>
+            </thead>
+            <tbody id="scores-body">
+                <!-- High scores will be populated here -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="back-to-menu">
+        <a href="index.html" id="back-link">Zurück zum Spielemenü</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const gameContainer = document.getElementById('game-container');
+            const settingsPanel = document.getElementById('settings-panel');
+            const highScoresPanel = document.getElementById('high-scores-panel');
+            const controls = document.getElementById('controls');
+            const operationSelect = document.getElementById('operation-select');
+            const difficultySelect = document.getElementById('difficulty-select');
+            const startBtn = document.getElementById('start-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const scoreElement = document.getElementById('score');
+            const levelElement = document.getElementById('level');
+            const livesElement = document.getElementById('lives');
+            const gameOverPanel = document.getElementById('game-over');
+            const finalScoreElement = document.getElementById('final-score');
+            const answerInput = document.getElementById('answer-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const languageSelect = document.getElementById('language-select');
+            const backLink = document.getElementById('back-link');
+            const scoresBody = document.getElementById('scores-body');
+            
+            // Game variables
+            let balloons = [];
+            let score = 0;
+            let level = 1;
+            let lives = 3;
+            let gameActive = false;
+            let balloonSpeed = 1;
+            let balloonInterval;
+            let createBalloonInterval;
+            let selectedOperation = 'addition';
+            let difficulty = 'easy';
+            let currentLanguage = 'de';
+            let targetBalloon = null;
+            let highScores = [];
+            
+            // Balloon colors based on operation
+            const balloonColors = {
+                'addition': '#FF9800',      // Orange
+                'subtraction': '#2196F3',   // Blue
+                'multiplication': '#4CAF50', // Green
+                'division': '#E91E63'       // Pink
+            };
+            
+            // Language translations
+            const translations = {
+                'en': {
+                    'title': 'Math Balloon Pop',
+                    'settings-title': 'Game Settings',
+                    'operation-label': 'Operation:',
+                    'difficulty-label': 'Difficulty:',
+                    'start-btn': 'Start Game',
+                    'score-text': 'Score: ',
+                    'level-text': 'Level: ',
+                    'lives-text': 'Lives: ',
+                    'game-over-text': 'Game Over!',
+                    'final-score-text': 'Your Score: ',
+                    'restart-btn': 'Restart',
+                    'submit-btn': 'OK',
+                    'back-link': 'Back to Games Menu',
+                    'high-scores-title': 'High Scores',
+                    'th-operation': 'Operation',
+                    'th-difficulty': 'Difficulty',
+                    'th-score': 'Score',
+                    'operations': {
+                        'addition': 'Addition (+)',
+                        'subtraction': 'Subtraction (-)',
+                        'multiplication': 'Multiplication (×)',
+                        'division': 'Division (÷)',
+                        'mixed': 'Mixed'
+                    },
+                    'difficulties': {
+                        'easy': 'Easy',
+                        'medium': 'Medium',
+                        'hard': 'Hard'
+                    }
+                },
+                'de': {
+                    'title': 'Mathe-Luftballonspiel',
+                    'settings-title': 'Spieleinstellungen',
+                    'operation-label': 'Rechenart:',
+                    'difficulty-label': 'Schwierigkeit:',
+                    'start-btn': 'Spiel starten',
+                    'score-text': 'Punktzahl: ',
+                    'level-text': 'Level: ',
+                    'lives-text': 'Leben: ',
+                    'game-over-text': 'Spiel vorbei!',
+                    'final-score-text': 'Deine Punktzahl: ',
+                    'restart-btn': 'Neu starten',
+                    'submit-btn': 'OK',
+                    'back-link': 'Zurück zum Spielemenü',
+                    'high-scores-title': 'Bestenliste',
+                    'th-operation': 'Rechenart',
+                    'th-difficulty': 'Schwierigkeit',
+                    'th-score': 'Punktzahl',
+                    'operations': {
+                        'addition': 'Addition (+)',
+                        'subtraction': 'Subtraktion (-)',
+                        'multiplication': 'Multiplikation (×)',
+                        'division': 'Division (÷)',
+                        'mixed': 'Gemischt'
+                    },
+                    'difficulties': {
+                        'easy': 'Leicht',
+                        'medium': 'Mittel',
+                        'hard': 'Schwer'
+                    }
+                },
+                'fr': {
+                    'title': 'Jeu de Ballons Mathématiques',
+                    'settings-title': 'Paramètres du Jeu',
+                    'operation-label': 'Opération:',
+                    'difficulty-label': 'Difficulté:',
+                    'start-btn': 'Commencer le Jeu',
+                    'score-text': 'Score: ',
+                    'level-text': 'Niveau: ',
+                    'lives-text': 'Vies: ',
+                    'game-over-text': 'Partie Terminée!',
+                    'final-score-text': 'Votre Score: ',
+                    'restart-btn': 'Recommencer',
+                    'submit-btn': 'OK',
+                    'back-link': 'Retour au Menu des Jeux',
+                    'high-scores-title': 'Meilleurs Scores',
+                    'th-operation': 'Opération',
+                    'th-difficulty': 'Difficulté',
+                    'th-score': 'Score',
+                    'operations': {
+                        'addition': 'Addition (+)',
+                        'subtraction': 'Soustraction (-)',
+                        'multiplication': 'Multiplication (×)',
+                        'division': 'Division (÷)',
+                        'mixed': 'Mixte'
+                    },
+                    'difficulties': {
+                        'easy': 'Facile',
+                        'medium': 'Moyen',
+                        'hard': 'Difficile'
+                    }
+                },
+                'es': {
+                    'title': 'Juego de Globos Matemáticos',
+                    'settings-title': 'Configuración del Juego',
+                    'operation-label': 'Operación:',
+                    'difficulty-label': 'Dificultad:',
+                    'start-btn': 'Iniciar Juego',
+                    'score-text': 'Puntuación: ',
+                    'level-text': 'Nivel: ',
+                    'lives-text': 'Vidas: ',
+                    'game-over-text': '¡Juego Terminado!',
+                    'final-score-text': 'Tu Puntuación: ',
+                    'restart-btn': 'Reiniciar',
+                    'submit-btn': 'OK',
+                    'back-link': 'Volver al Menú de Juegos',
+                    'high-scores-title': 'Puntuaciones Altas',
+                    'th-operation': 'Operación',
+                    'th-difficulty': 'Dificultad',
+                    'th-score': 'Puntuación',
+                    'operations': {
+                        'addition': 'Suma (+)',
+                        'subtraction': 'Resta (-)',
+                        'multiplication': 'Multiplicación (×)',
+                        'division': 'División (÷)',
+                        'mixed': 'Mixto'
+                    },
+                    'difficulties': {
+                        'easy': 'Fácil',
+                        'medium': 'Medio',
+                        'hard': 'Difícil'
+                    }
+                },
+                'pl': {
+                    'title': 'Gra Matematyczne Balony',
+                    'settings-title': 'Ustawienia Gry',
+                    'operation-label': 'Działanie:',
+                    'difficulty-label': 'Poziom trudności:',
+                    'start-btn': 'Rozpocznij Grę',
+                    'score-text': 'Wynik: ',
+                    'level-text': 'Poziom: ',
+                    'lives-text': 'Życia: ',
+                    'game-over-text': 'Koniec Gry!',
+                    'final-score-text': 'Twój Wynik: ',
+                    'restart-btn': 'Restart',
+                    'submit-btn': 'OK',
+                    'back-link': 'Powrót do Menu Gier',
+                    'high-scores-title': 'Najlepsze Wyniki',
+                    'th-operation': 'Działanie',
+                    'th-difficulty': 'Poziom trudności',
+                    'th-score': 'Wynik',
+                    'operations': {
+                        'addition': 'Dodawanie (+)',
+                        'subtraction': 'Odejmowanie (-)',
+                        'multiplication': 'Mnożenie (×)',
+                        'division': 'Dzielenie (÷)',
+                        'mixed': 'Mieszane'
+                    },
+                    'difficulties': {
+                        'easy': 'Łatwy',
+                        'medium': 'Średni',
+                        'hard': 'Trudny'
+                    }
+                }
+            };
+            
+            // Detect browser language
+            function detectLanguage() {
+                // Check URL parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const langParam = urlParams.get('lang');
+                if (langParam && translations[langParam]) {
+                    return langParam;
+                }
+                
+                // Check localStorage next
+                const storedLang = localStorage.getItem('preferredLanguage');
+                if (storedLang && translations[storedLang]) {
+                    return storedLang;
+                }
+                
+                // Finally, check browser language
+                const browserLang = navigator.language || navigator.userLanguage;
+                const shortLang = browserLang.split('-')[0]; // Get primary language code
+                
+                // Check if we support this language
+                if (translations[shortLang]) {
+                    return shortLang;
+                }
+                
+                // Default to German if language not supported
+                return 'de';
+            }
+            
+            // Set initial language based on detection
+            currentLanguage = detectLanguage();
+            languageSelect.value = currentLanguage;
+            document.documentElement.lang = currentLanguage;
+            
+            // Apply initial language
+            updateLanguage();
+            
+            // Load high scores
+            loadHighScores();
+            displayHighScores();
+            
+            // Set up event listeners
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', restartGame);
+            submitBtn.addEventListener('click', checkAnswer);
+            languageSelect.addEventListener('change', changeLanguage);
+            
+            // Also check answer on Enter key
+            answerInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+            
+            // Update back link to include language parameter
+            backLink.href = `index.html?lang=${currentLanguage}`;
+            
+            function changeLanguage() {
+                currentLanguage = languageSelect.value;
+                updateLanguage();
+                
+                // Store the language preference in localStorage
+                localStorage.setItem('preferredLanguage', currentLanguage);
+                
+                // Update the URL parameter without reloading the page
+                const url = new URL(window.location);
+                url.searchParams.set('lang', currentLanguage);
+                window.history.replaceState({}, '', url);
+                
+                // Update back link
+                backLink.href = `index.html?lang=${currentLanguage}`;
+                
+                // Update operation and difficulty options
+                updateOperationOptions();
+                updateDifficultyOptions();
+                
+                // Update high scores display
+                displayHighScores();
+            }
+            
+            function updateLanguage() {
+                const lang = translations[currentLanguage];
+                
+                // Update static UI elements
+                document.getElementById('title').textContent = lang['title'];
+                document.getElementById('settings-title').textContent = lang['settings-title'];
+                document.getElementById('operation-label').textContent = lang['operation-label'];
+                document.getElementById('difficulty-label').textContent = lang['difficulty-label'];
+                startBtn.textContent = lang['start-btn'];
+                document.getElementById('score-text').innerHTML = lang['score-text'] + '<span id="score">0</span>';
+                document.getElementById('level-text').innerHTML = lang['level-text'] + '<span id="level">1</span>';
+                document.getElementById('lives-text').innerHTML = lang['lives-text'] + '<span id="lives">3</span>';
+                document.getElementById('game-over-text').textContent = lang['game-over-text'];
+                document.getElementById('final-score-text').innerHTML = lang['final-score-text'] + '<span id="final-score">0</span>';
+                restartBtn.textContent = lang['restart-btn'];
+                submitBtn.textContent = lang['submit-btn'];
+                backLink.textContent = lang['back-link'];
+                document.getElementById('high-scores-title').textContent = lang['high-scores-title'];
+                document.getElementById('th-operation').textContent = lang['th-operation'];
+                document.getElementById('th-difficulty').textContent = lang['th-difficulty'];
+                document.getElementById('th-score').textContent = lang['th-score'];
+                
+                // Update document title
+                document.title = lang['title'];
+                
+                // Update document language
+                document.documentElement.lang = currentLanguage;
+                
+                // Update operation and difficulty options
+                updateOperationOptions();
+                updateDifficultyOptions();
+            }
+            
+            function updateOperationOptions() {
+                const lang = translations[currentLanguage]['operations'];
+                const currentValue = operationSelect.value;
+                
+                // Clear and rebuild options
+                operationSelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'addition': lang['addition'],
+                    'subtraction': lang['subtraction'],
+                    'multiplication': lang['multiplication'],
+                    'division': lang['division'],
+                    'mixed': lang['mixed']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    operationSelect.appendChild(option);
+                }
+                
+                // Restore selection
+                operationSelect.value = currentValue;
+            }
+            
+            function updateDifficultyOptions() {
+                const lang = translations[currentLanguage]['difficulties'];
+                const currentValue = difficultySelect.value;
+                
+                // Clear and rebuild options
+                difficultySelect.innerHTML = '';
+                
+                for (const [value, text] of Object.entries({
+                    'easy': lang['easy'],
+                    'medium': lang['medium'],
+                    'hard': lang['hard']
+                })) {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    difficultySelect.appendChild(option);
+                }
+                
+                // Restore selection
+                difficultySelect.value = currentValue;
+            }
+            
+            function startGame() {
+                // Reset game state
+                score = 0;
+                level = 1;
+                lives = 3;
+                balloonSpeed = 1;
+                gameActive = true;
+                balloons = [];
+                
+                // Get selected options
+                selectedOperation = operationSelect.value;
+                difficulty = difficultySelect.value;
+                
+                // Update UI
+                scoreElement.textContent = score;
+                levelElement.textContent = level;
+                livesElement.textContent = lives;
+                
+                // Show game container and controls, hide settings and high scores
+                gameContainer.style.display = 'block';
+                controls.style.display = 'flex';
+                settingsPanel.style.display = 'none';
+                highScoresPanel.style.display = 'none';
+                gameOverPanel.style.display = 'none';
+                
+                // Clear any existing balloons
+                gameContainer.querySelectorAll('.balloon').forEach(b => b.remove());
+                
+                // Start creating balloons
+                startBalloonCreation();
+                
+                // Start balloon movement
+                startBalloonMovement();
+                
+                // Focus on answer input
+                answerInput.focus();
+            }
+            
+            function restartGame() {
+                gameOverPanel.style.display = 'none';
+                startGame();
+            }
+            
+            function startBalloonCreation() {
+                // Clear any existing interval
+                if (createBalloonInterval) {
+                    clearInterval(createBalloonInterval);
+                }
+                
+                // Create a balloon every few seconds, adjusted by level
+                const creationInterval = Math.max(1000, 3000 - (level * 200));
+                createBalloonInterval = setInterval(createBalloon, creationInterval);
+                
+                // Create initial balloon
+                createBalloon();
+            }
+            
+            function startBalloonMovement() {
+                // Clear any existing interval
+                if (balloonInterval) {
+                    clearInterval(balloonInterval);
+                }
+                
+                // Move balloons every 50ms
+                balloonInterval = setInterval(moveBalloons, 50);
+            }
+            
+            function createBalloon() {
+                if (!gameActive) return;
+                
+                // Generate math problem based on selected operation and difficulty
+                const problem = generateMathProblem();
+                
+                // Create balloon element
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                
+                // Set balloon color based on operation
+                let operation = problem.operation;
+                if (operation === 'mixed') {
+                    const ops = ['addition', 'subtraction', 'multiplication', 'division'];
+                    operation = ops[Math.floor(Math.random() * ops.length)];
+                }
+                balloon.style.backgroundColor = balloonColors[operation];
+                
+                // Set balloon position
+                const balloonWidth = 60;
+                const maxX = gameContainer.clientWidth - balloonWidth;
+                const x = Math.floor(Math.random() * maxX);
+                const y = gameContainer.clientHeight;
+                
+                balloon.style.left = `${x}px`;
+                balloon.style.bottom = '0px';
+                
+                // Set balloon content (math problem)
+                balloon.textContent = problem.text;
+                
+                // Store problem data in balloon
+                balloon.dataset.answer = problem.answer;
+                balloon.dataset.operation = operation;
+                
+                // Add floating animation
+                const animationDuration = 2 + Math.random() * 3; // 2-5s
+                balloon.style.animation = `float ${animationDuration}s infinite`;
+                
+                // Add click handler
+                balloon.addEventListener('click', function() {
+                    if (targetBalloon) {
+                        targetBalloon.style.border = 'none';
+                    }
+                    targetBalloon = balloon;
+                    balloon.style.border = '3px solid white';
+                    answerInput.focus();
+                });
+                
+                // Add to game container
+                gameContainer.appendChild(balloon);
+                
+                // Add to balloons array
+                balloons.push({
+                    element: balloon,
+                    x: x,
+                    y: 0,
+                    answer: problem.answer
+                });
+            }
+            
+            function moveBalloons() {
+                if (!gameActive) return;
+                
+                const containerHeight = gameContainer.clientHeight;
+                
+                // Move each balloon up
+                for (let i = balloons.length - 1; i >= 0; i--) {
+                    const balloon = balloons[i];
+                    
+                    // Update position
+                    balloon.y += balloonSpeed + (level * 0.1);
+                    balloon.element.style.bottom = `${balloon.y}px`;
+                    
+                    // Check if balloon reached the top
+                    if (balloon.y > containerHeight) {
+                        // Remove balloon
+                        gameContainer.removeChild(balloon.element);
+                        balloons.splice(i, 1);
+                        
+                        // Lose a life
+                        lives--;
+                        livesElement.textContent = lives;
+                        
+                        // Check game over
+                        if (lives <= 0) {
+                            endGame();
+                        }
+                    }
+                }
+            }
+            
+            function generateMathProblem() {
+                let num1, num2, answer, text, operation = selectedOperation;
+                
+                // If mixed, randomly select an operation
+                if (operation === 'mixed') {
+                    const operations = ['addition', 'subtraction', 'multiplication', 'division'];
+                    operation = operations[Math.floor(Math.random() * operations.length)];
+                }
+                
+                // Generate numbers based on difficulty and operation
+                switch (difficulty) {
+                    case 'easy':
+                        num1 = Math.floor(Math.random() * 10) + 1; // 1-10
+                        num2 = Math.floor(Math.random() * 10) + 1; // 1-10
+                        break;
+                    case 'medium':
+                        num1 = Math.floor(Math.random() * 20) + 1; // 1-20
+                        num2 = Math.floor(Math.random() * 20) + 1; // 1-20
+                        break;
+                    case 'hard':
+                        num1 = Math.floor(Math.random() * 50) + 1; // 1-50
+                        num2 = Math.floor(Math.random() * 30) + 1; // 1-30
+                        break;
+                }
+                
+                // For division, ensure clean division
+                if (operation === 'division') {
+                    // Swap if num2 > num1 to avoid fractions
+                    if (num2 > num1) {
+                        [num1, num2] = [num2, num1];
+                    }
+                    
+                    // Ensure num2 is not 0
+                    if (num2 === 0) num2 = 1;
+                    
+                    // Make sure division results in an integer
+                    num1 = num2 * Math.floor(Math.random() * 10 + 1);
+                }
+                
+                // For subtraction, ensure positive result
+                if (operation === 'subtraction' && num2 > num1) {
+                    [num1, num2] = [num2, num1];
+                }
+                
+                // Calculate answer and create text
+                switch (operation) {
+                    case 'addition':
+                        answer = num1 + num2;
+                        text = `${num1} + ${num2}`;
+                        break;
+                    case 'subtraction':
+                        answer = num1 - num2;
+                        text = `${num1} - ${num2}`;
+                        break;
+                    case 'multiplication':
+                        answer = num1 * num2;
+                        text = `${num1} × ${num2}`;
+                        break;
+                    case 'division':
+                        answer = num1 / num2;
+                        text = `${num1} ÷ ${num2}`;
+                        break;
+                }
+                
+                return { text, answer, operation };
+            }
+            
+            function checkAnswer() {
+                if (!gameActive || !targetBalloon) return;
+                
+                const userAnswer = parseInt(answerInput.value);
+                const correctAnswer = parseInt(targetBalloon.dataset.answer);
+                
+                if (userAnswer === correctAnswer) {
+                    // Correct answer
+                    popBalloon(targetBalloon);
+                    
+                    // Update score
+                    score += 10 * level;
+                    scoreElement.textContent = score;
+                    
+                    // Check for level up (every 100 points)
+                    if (score >= level * 100) {
+                        levelUp();
+                    }
+                }
+                
+                // Clear input and reset target
+                answerInput.value = '';
+                targetBalloon = null;
+                answerInput.focus();
+            }
+            
+            function popBalloon(balloonElement) {
+                // Find balloon in array
+                const index = balloons.findIndex(b => b.element === balloonElement);
+                if (index !== -1) {
+                    // Add popping animation
+                    balloonElement.classList.add('popping');
+                    
+                    // Remove balloon after animation
+                    setTimeout(() => {
+                        if (gameContainer.contains(balloonElement)) {
+                            gameContainer.removeChild(balloonElement);
+                        }
+                        balloons.splice(index, 1);
+                    }, 300);
+                }
+            }
+            
+            function levelUp() {
+                level++;
+                levelElement.textContent = level;
+                
+                // Increase balloon speed
+                balloonSpeed += 0.2;
+                
+                // Adjust balloon creation interval
+                clearInterval(createBalloonInterval);
+                const creationInterval = Math.max(1000, 3000 - (level * 200));
+                createBalloonInterval = setInterval(createBalloon, creationInterval);
+            }
+            
+            function endGame() {
+                gameActive = false;
+                
+                // Stop intervals
+                clearInterval(balloonInterval);
+                clearInterval(createBalloonInterval);
+                
+                // Show game over panel
+                gameOverPanel.style.display = 'flex';
+                finalScoreElement.textContent = score;
+                
+                // Save high score
+                saveHighScore();
+                
+                // Update high scores display
+                displayHighScores();
+            }
+            
+            function saveHighScore() {
+                // Create high score entry
+                const entry = {
+                    operation: selectedOperation,
+                    difficulty: difficulty,
+                    score: score,
+                    date: new Date().toISOString()
+                };
+                
+                // Add to high scores
+                highScores.push(entry);
+                
+                // Sort by score (descending)
+                highScores.sort((a, b) => b.score - a.score);
+                
+                // Keep only top 10
+                if (highScores.length > 10) {
+                    highScores = highScores.slice(0, 10);
+                }
+                
+                // Save to local storage
+                localStorage.setItem('balloonGameHighScores', JSON.stringify(highScores));
+            }
+            
+            function loadHighScores() {
+                const savedScores = localStorage.getItem('balloonGameHighScores');
+                if (savedScores) {
+                    highScores = JSON.parse(savedScores);
+                }
+            }
+            
+            function displayHighScores() {
+                const lang = translations[currentLanguage];
+                scoresBody.innerHTML = '';
+                
+                if (highScores.length === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 3;
+                    cell.textContent = 'No high scores yet';
+                    cell.style.textAlign = 'center';
+                    row.appendChild(cell);
+                    scoresBody.appendChild(row);
+                    return;
+                }
+                
+                // Display each high score
+                highScores.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Operation cell
+                    const opCell = document.createElement('td');
+                    if (entry.operation === 'mixed') {
+                        opCell.textContent = translations[currentLanguage]['operations']['mixed'];
+                    } else {
+                        opCell.textContent = translations[currentLanguage]['operations'][entry.operation];
+                    }
+                    row.appendChild(opCell);
+                    
+                    // Difficulty cell
+                    const diffCell = document.createElement('td');
+                    diffCell.textContent = translations[currentLanguage]['difficulties'][entry.difficulty];
+                    row.appendChild(diffCell);
+                    
+                    // Score cell
+                    const scoreCell = document.createElement('td');
+                    scoreCell.textContent = entry.score;
+                    row.appendChild(scoreCell);
+                    
+                    scoresBody.appendChild(row);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-<!-- Landing Page -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -126,7 +125,7 @@
     
     <div class="games-container">
         <!-- Numbers Game -->
-        <a href="numbers_game.html" class="game-button">
+        <a href="numbers_game.html" class="game-button" id="numbers-game-link">
             <div class="game-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="6" width="8" height="12" rx="1" fill="#64B5F6" />
@@ -140,7 +139,23 @@
             <div class="game-title" id="numbers-game-title">Zahlenvergleichsspiel</div>
         </a>
         
-        <!-- Placeholder for future games -->
+        <!-- Balloon Math Game -->
+        <a href="balloon.html" class="game-button" id="balloon-game-link">
+            <div class="game-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Balloon body -->
+                    <path d="M12 4c-3.3 0-6 2.7-6 6 0 2.2 1.2 4.3 3 5.5.6.4 1 1 1.2 1.7l.3 1.8h3l.3-1.8c.2-.7.6-1.3 1.2-1.7 1.8-1.2 3-3.3 3-5.5 0-3.3-2.7-6-6-6z" 
+                          fill="#FF9800" stroke="#E65100" stroke-width="1.5" />
+                    <!-- Balloon string -->
+                    <path d="M12 19v3" stroke="#666" stroke-width="1.5" />
+                    <!-- Math symbols -->
+                    <path d="M9 8h6M12 5v6" stroke="white" stroke-width="1.5" />
+                    <path d="M8 12l8-4" stroke="white" stroke-width="1.5" opacity="0.7" />
+                </svg>
+            </div>
+            <div class="game-title" id="balloon-game-title">Mathe-Luftballonspiel</div>
+        </a>
+        
         <div class="game-button coming-soon">
             <div class="game-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -217,17 +232,6 @@
             </div>
             <div class="game-title" id="coming-soon-7">Demnächst verfügbar</div>
         </div>
-        
-        <div class="game-button coming-soon">
-            <div class="game-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 8v4" />
-                    <path d="M12 16h.01" />
-                </svg>
-            </div>
-            <div class="game-title" id="coming-soon-8">Demnächst verfügbar</div>
-        </div>
     </div>
 
     <script>
@@ -235,9 +239,12 @@
             const languageSelect = document.getElementById('language-select');
             const pageTitle = document.getElementById('page-title');
             const numbersGameTitle = document.getElementById('numbers-game-title');
+            const balloonGameTitle = document.getElementById('balloon-game-title');
+            const numbersGameLink = document.getElementById('numbers-game-link');
+            const balloonGameLink = document.getElementById('balloon-game-link');
             const comingSoonElements = [];
             
-            for (let i = 1; i <= 8; i++) {
+            for (let i = 1; i <= 7; i++) {
                 comingSoonElements.push(document.getElementById(`coming-soon-${i}`));
             }
             
@@ -246,32 +253,51 @@
                 'en': {
                     'page-title': 'Games Collection',
                     'numbers-game-title': 'Number Comparison Game',
+                    'balloon-game-title': 'Math Balloon Game',
                     'coming-soon': 'Coming Soon'
                 },
                 'de': {
                     'page-title': 'Spielesammlung',
                     'numbers-game-title': 'Zahlenvergleichsspiel',
+                    'balloon-game-title': 'Mathe-Luftballonspiel',
                     'coming-soon': 'Demnächst verfügbar'
                 },
                 'fr': {
                     'page-title': 'Collection de Jeux',
                     'numbers-game-title': 'Jeu de Comparaison de Nombres',
+                    'balloon-game-title': 'Jeu de Ballons Mathématiques',
                     'coming-soon': 'Bientôt Disponible'
                 },
                 'es': {
                     'page-title': 'Colección de Juegos',
                     'numbers-game-title': 'Juego de Comparación de Números',
+                    'balloon-game-title': 'Juego de Globos Matemáticos',
                     'coming-soon': 'Próximamente'
                 },
                 'pl': {
                     'page-title': 'Kolekcja Gier',
                     'numbers-game-title': 'Gra Porównywania Liczb',
+                    'balloon-game-title': 'Gra Matematyczne Balony',
                     'coming-soon': 'Wkrótce Dostępne'
                 }
             };
             
             // Detect browser language
             function detectLanguage() {
+                // Check URL parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const langParam = urlParams.get('lang');
+                if (langParam && translations[langParam]) {
+                    return langParam;
+                }
+                
+                // Check localStorage next
+                const storedLang = localStorage.getItem('preferredLanguage');
+                if (storedLang && translations[storedLang]) {
+                    return storedLang;
+                }
+                
+                // Finally, check browser language
                 const browserLang = navigator.language || navigator.userLanguage;
                 const shortLang = browserLang.split('-')[0]; // Get primary language code
                 
@@ -284,7 +310,7 @@
                 return 'de';
             }
             
-            // Set initial language based on browser setting
+            // Set initial language based on detection
             const initialLanguage = detectLanguage();
             languageSelect.value = initialLanguage;
             document.documentElement.lang = initialLanguage;
@@ -314,39 +340,25 @@
                 // Update UI elements
                 pageTitle.textContent = lang['page-title'];
                 numbersGameTitle.textContent = lang['numbers-game-title'];
+                balloonGameTitle.textContent = lang['balloon-game-title'];
                 document.title = lang['page-title'];
                 
                 // Update all "coming soon" elements
                 comingSoonElements.forEach(element => {
-                    element.textContent = lang['coming-soon'];
+                    if (element) {
+                        element.textContent = lang['coming-soon'];
+                    }
                 });
                 
                 // Update document language
                 document.documentElement.lang = langCode;
                 
-                // Update href for numbers_game.html to include language parameter
-                const numbersGameLink = document.querySelector('a[href="numbers_game.html"]');
-                if (numbersGameLink) {
-                    numbersGameLink.href = `numbers_game.html?lang=${langCode}`;
-                }
-            }
-            
-            // Check for language parameter in URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const langParam = urlParams.get('lang');
-            
-            // Check for stored language preference
-            const storedLang = localStorage.getItem('preferredLanguage');
-            
-            // Priority: URL parameter > localStorage > browser language
-            if (langParam && translations[langParam]) {
-                languageSelect.value = langParam;
-                applyLanguage(langParam);
-            } else if (storedLang && translations[storedLang]) {
-                languageSelect.value = storedLang;
-                applyLanguage(storedLang);
+                // Update href for game links to include language parameter
+                numbersGameLink.href = `numbers_game.html?lang=${langCode}`;
+                balloonGameLink.href = `balloon.html?lang=${langCode}`;
             }
         });
     </script>
+    
 </body>
 </html>
